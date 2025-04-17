@@ -1,0 +1,2847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor M3U Pro+ (Modernizado Inter)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-hover: #0b5ed7;
+            --danger: #dc3545;
+            --danger-hover: #bb2d3b;
+            --warning: #ffc107;
+            --warning-hover: #ffca2c;
+            --success: #198754;
+            --success-hover: #157347;
+            --info: #0dcaf0;
+            --info-hover: #31d2f2;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --light-alt: #ffffff;
+            --grey: #ced4da;
+            --grey-dark: #adb5bd;
+            --white: #ffffff;
+            --text-dark: #212529;
+            --text-light: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --border-radius: 0.375rem;
+            --input-height: 38px;
+            --transition-speed: 0.2s;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 30px auto;
+            padding: 0 25px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+            color: var(--white);
+            padding: 20px 35px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        header .header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+         #file-name-display {
+            font-size: 0.85em;
+            opacity: 0.8;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+         }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 18px 20px;
+            background: var(--light-alt);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 30px;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+        .toolbar-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .toolbar-section.grow {
+            flex-grow: 1;
+            justify-content: flex-end;
+        }
+        .separator {
+            width: 1px;
+            height: 25px;
+            background-color: var(--border-color);
+            margin: 0 10px;
+            align-self: center;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all var(--transition-speed) ease-in-out;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            white-space: nowrap;
+            height: var(--input-height);
+            vertical-align: middle;
+        }
+        .btn:disabled { opacity: 0.65; cursor: not-allowed; }
+        .btn i { font-size: 0.9em; margin-right: 2px; }
+
+        .btn-primary { background-color: var(--primary); color: var(--white); border-color: var(--primary); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+        .btn-danger { background-color: var(--danger); color: var(--white); border-color: var(--danger); }
+        .btn-danger:hover:not(:disabled) { background-color: var(--danger-hover); border-color: var(--danger-hover); }
+        .btn-success { background-color: var(--success); color: var(--white); border-color: var(--success); }
+        .btn-success:hover:not(:disabled) { background-color: var(--success-hover); border-color: var(--success-hover); }
+        .btn-warning { background-color: var(--warning); color: var(--text-dark); border-color: var(--warning); }
+        .btn-warning:hover:not(:disabled) { background-color: var(--warning-hover); border-color: var(--warning-hover); }
+        .btn-info { background-color: var(--info); color: var(--text-dark); border-color: var(--info); }
+        .btn-info:hover:not(:disabled) { background-color: var(--info-hover); border-color: var(--info-hover); }
+
+        .btn-outline-primary { border-color: var(--primary); color: var(--primary); background-color: transparent; }
+        .btn-outline-primary:hover:not(:disabled) { background-color: var(--primary); color: var(--white); }
+        .btn-outline-info { border-color: var(--info); color: var(--info); background-color: transparent; }
+        .btn-outline-info:hover:not(:disabled) { background-color: var(--info); color: var(--text-dark); }
+        .btn-outline-danger { border-color: var(--danger); color: var(--danger); background-color: transparent; }
+        .btn-outline-danger:hover:not(:disabled) { background-color: var(--danger); color: var(--white); }
+        .btn-outline-secondary { border-color: var(--grey-dark); color: var(--text-light); background-color: transparent; }
+        .btn-outline-secondary:hover:not(:disabled) { background-color: var(--grey-dark); color: var(--white); }
+         .btn-outline-warning { border-color: var(--warning); color: var(--warning); background-color: transparent; }
+         .btn-outline-warning:hover:not(:disabled) { background-color: var(--warning); color: var(--text-dark); }
+
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            gap: 4px;
+            height: auto;
+        }
+         .btn-sm i { font-size: 0.85em; }
+
+         .btn:not(:disabled):active {
+             transform: translateY(1px) scale(0.99);
+             box-shadow: none;
+             filter: brightness(0.95);
+         }
+
+        input[type="text"], input[type="url"], input[type="search"], select, textarea {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            min-width: 150px;
+            height: var(--input-height);
+            font-size: 0.9rem;
+            font-family: inherit;
+            background-color: var(--white);
+            transition: border-color var(--transition-speed) ease-in-out, box-shadow var(--transition-speed) ease-in-out;
+            vertical-align: middle;
+        }
+        textarea { height: auto; min-height: var(--input-height); line-height: 1.5; resize: vertical; }
+        input[type="text"]:focus, input[type="url"]:focus, input[type="search"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        #search-input {
+             min-width: 200px;
+        }
+        #group-filter {
+             min-width: 180px;
+        }
+
+        .table-container {
+            background: var(--light-alt);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+            border-spacing: 0;
+        }
+        th, td {
+            padding: 11px 14px;
+            text-align: left;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        td {
+             border-bottom: 1px solid var(--border-color);
+             transition: background-color var(--transition-speed);
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        tbody tr:nth-child(even):not(.group-header-row):not(.selected-row) {
+            background-color: #fcfcfc;
+        }
+
+        th {
+            background-color: #f1f2f6;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid var(--border-color);
+        }
+        th.sortable { cursor: pointer; }
+        th.sortable i { margin-left: 5px; color: var(--text-light); transition: color var(--transition-speed); }
+        th.sortable:hover { background-color: #e9ecef; }
+        th.sortable:hover i { color: var(--text-dark); }
+
+        tr.channel-row:hover td:not(.selected-row td) {
+            background-color: #f0f5ff;
+        }
+
+        .selected-row td { background-color: #cfe2ff !important; }
+        .selected-row td { border-bottom-color: var(--primary); }
+
+        .favorite-icon { color: var(--warning); }
+        .drag-handle { cursor: move; color: #aaa; padding: 0 10px 0 0; opacity: 0.7; transition: opacity var(--transition-speed); }
+        tr.channel-row:hover .drag-handle { opacity: 1;}
+        .checkbox-cell, .index-cell { width: 50px; text-align: center; }
+        .logo-cell { width: 60px; text-align: center; }
+        .name-cell { max-width: 250px; white-space: normal; word-break: break-word; }
+        .url-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+        .group-cell { max-width: 180px; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
+        .action-change-group { cursor: pointer; color: var(--primary); opacity: 0.7; transition: opacity 0.2s; font-size: 0.9em; flex-shrink: 0;}
+        .action-change-group:hover { opacity: 1; }
+        .group-cell-text { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; }
+        .status-cell { width: 110px; text-align: center; }
+        .status-badge { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-badge i { font-size: 0.9em; }
+        .status-active { background-color: #d1e7dd; color: #0f5132; }
+        .status-inactive { background-color: #f8d7da; color: #842029; }
+        .status-checking { background-color: #cff4fc; color: #055160; }
+        .status-unknown { background-color: #e2e3e5; color: #41464b; }
+
+        .actions-cell { width: 130px; text-align: center; white-space: nowrap; }
+        .actions-cell .btn { margin: 0 2px; }
+
+        .logo-preview { max-width: 40px; max-height: 25px; vertical-align: middle; object-fit: contain; border-radius: 3px; background-color: var(--light); border: 1px solid var(--border-color); }
+        td img.logo-preview { background-color: var(--light-alt); }
+        td .logo-cell span { font-size: 0.8em; color: var(--text-light); }
+
+        .groups-container {
+            background: var(--light-alt);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 25px 30px;
+            margin-bottom: 30px;
+             border: 1px solid var(--border-color);
+        }
+        .groups-container h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .groups-container p {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        #groups-list { display: grid; gap: 10px; }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--white);
+            cursor: grab;
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+        .group-item:hover { background-color: #f8f9fa; }
+        .group-item.sortable-chosen { background-color: #e9ecef; box-shadow: var(--shadow-medium); }
+        .group-item .logo-preview { background-color: transparent; flex-shrink: 0; border: none; }
+        .group-drag-handle { cursor: grab; color: var(--grey-dark); padding: 0 5px; flex-shrink: 0; }
+        .group-item span { flex-grow: 1; margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+        .group-item .edit-group-details {
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+         .group-item .edit-group-details i { margin-right: 0; }
+
+        .context-menu {
+            position: absolute;
+            background: var(--light-alt);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            z-index: 1000;
+            display: none;
+            border: 1px solid var(--border-color);
+            padding: 8px 0;
+            min-width: 180px;
+        }
+        .context-menu-item {
+            padding: 9px 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: var(--text-dark);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            white-space: nowrap;
+        }
+        .context-menu-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--text-light);
+             transition: color var(--transition-speed);
+        }
+        .context-menu-item:hover {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+         .context-menu-item:hover i {
+            color: var(--white);
+        }
+        .context-menu hr { margin: 5px 0; border-color: var(--border-color); border-style: solid; border-width: 1px 0 0 0; }
+
+
+        .modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--light-alt); margin: auto; padding: 0; border: none; width: 90%; max-width: 550px; border-radius: var(--border-radius); box-shadow: var(--shadow-medium); position: relative; display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; background-color: var(--light); border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius);}
+        .modal-title { margin: 0; font-size: 1.2rem; font-weight: 600; }
+        .modal-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--text-light); padding: 0; line-height: 1; opacity: 0.7; transition: opacity var(--transition-speed); }
+        .modal-close:hover { opacity: 1; }
+        .modal-body { padding: 20px 25px; overflow-y: auto; flex-grow: 1; background-color: var(--light-alt); }
+        .modal-body label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.85rem; }
+        .modal-body input[type="text"], .modal-body input[type="url"], .modal-body textarea, .modal-body select { width: 100%; margin-bottom: 18px; }
+        .modal-footer { padding: 15px 25px; text-align: right; border-top: 1px solid var(--border-color); flex-shrink: 0; background-color: var(--light); border-bottom-left-radius: var(--border-radius); border-bottom-right-radius: var(--border-radius);}
+        .modal-footer .btn { margin-left: 8px; }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1100; }
+        .toast { background-color: var(--dark); color: var(--white); padding: 12px 20px; margin-bottom: 10px; border-radius: var(--border-radius); box-shadow: var(--shadow-medium); opacity: 0; transition: opacity 0.5s, transform 0.5s; transform: translateX(100%); display: flex; align-items: center; gap: 10px; min-width: 280px; font-size: 0.9rem; }
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.success { background-color: var(--success); }
+        .toast.error { background-color: var(--danger); }
+        .toast.info { background-color: var(--info); color: var(--text-dark); }
+        .toast.warning { background-color: var(--warning); color: var(--text-dark); }
+
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 1060; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 15px; }
+        .spinner { border: 6px solid #e9ecef; border-top: 6px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        #loading-message { font-weight: 500; color: var(--text-dark); }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .group-header-row { background-color: #e9ecef; font-weight: 600; cursor: pointer; transition: background-color var(--transition-speed); }
+        .group-header-row:hover { background-color: #dde2e6; }
+        .group-header-row td { padding: 10px 15px; border-bottom: 1px solid var(--grey-dark); }
+        .group-toggle-icon { margin-right: 10px; width: 16px; text-align: center; display: inline-block; transition: transform var(--transition-speed) ease-in-out; }
+        .group-header-row.collapsed .group-toggle-icon { transform: rotate(-90deg); }
+        .channel-row.hidden { display: none; }
+        .group-channel-count { font-size: 0.85em; color: var(--text-light); margin-left: 10px; font-weight: 400; }
+
+        #group-change-modal .modal-body { max-height: 350px; }
+        .group-change-option { display: block; padding: 10px 15px; margin-bottom: 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius); cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        .group-change-option:hover { background-color: #f0f5ff; border-color: var(--primary);}
+        .group-change-option.selected { background-color: var(--primary); color: var(--white); border-color: var(--primary); font-weight: 500; }
+        .group-change-option input[type="radio"] { display: none; }
+
+        .compare-diff { background-color: rgba(255, 193, 7, 0.3); padding: 1px 4px; border-radius: 3px; font-weight: 600;}
+        #compare-modal .modal-content { max-width: 950px; }
+        #compare-modal .modal-body { background-color: var(--light); }
+        #compare-modal .modal-body > p { margin-bottom: 20px; font-weight: 500;}
+        #compare-modal h6 { font-weight: 600; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;}
+        #compare-modal ul { background-color: var(--white); list-style: none; padding: 0; font-size: 0.85em; max-height: 45vh; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; margin: 0; border-radius: var(--border-radius); }
+        #compare-modal ul li { border-bottom: 1px solid #eee; padding: 5px 8px; }
+        #compare-modal ul li:last-child { border-bottom: none; }
+        .compare-list-a-name-dynamic, .compare-list-b-name-dynamic { font-weight: bold; }
+        #copy-missing-to-a-btn { margin-top: 10px; }
+
+        #duplicates-modal .modal-content { max-width: 850px; }
+        #duplicates-modal .modal-body { background-color: var(--light); }
+        .duplicate-set { border: 1px solid var(--border-color); border-radius: var(--border-radius); margin-bottom: 15px; padding: 15px 20px; background-color: var(--light-alt); position: relative; box-shadow: var(--shadow-soft); }
+        .duplicate-set p { margin-bottom: 8px; font-size: 0.9em; }
+        .duplicate-set p strong { color: var(--danger); margin-right: 5px;}
+        .duplicate-set p code {
+             background-color: #e9ecef;
+             padding: 2px 5px;
+             border-radius: 3px;
+             font-size: 0.95em;
+             word-break: break-all;
+        }
+        .duplicate-set ul { list-style: decimal; padding-left: 25px; margin: 10px 0 10px 0; font-size: 0.9em; }
+        .duplicate-set li { margin-bottom: 5px; }
+        .duplicate-set .delete-duplicates-for-url {
+             position: absolute;
+             top: 15px;
+             right: 15px;
+        }
+
+        @media (max-width: 992px) {
+            .toolbar { flex-direction: column; align-items: stretch; padding: 15px;}
+            .toolbar-section { width: 100%; justify-content: flex-start; }
+            .toolbar-section.grow { justify-content: flex-start; }
+            .separator { display: none; }
+            header { flex-direction: column; text-align: center; gap: 15px; padding: 15px 20px; }
+            header .header-info { justify-content: center; width: 100%; }
+            #compare-modal .modal-content > .modal-body > div { grid-template-columns: 1fr; gap: 20px;}
+            #compare-modal ul { max-height: 30vh; }
+            .name-cell, .url-cell, .group-cell { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+            .name-cell { white-space: normal; }
+            th, td { padding: 10px 12px;}
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 15px; margin: 20px auto; }
+            header h1 { font-size: 1.4rem; }
+            .actions-cell { width: auto; }
+            .actions-cell .btn { display: inline-block; margin: 2px 1px;}
+            .groups-container { padding: 15px; }
+             .name-cell, .url-cell, .group-cell { max-width: 100px; }
+             th, td { font-size: 0.85rem; padding: 8px 10px;}
+             .btn { padding: 5px 10px; font-size: 0.8rem; height: 34px; gap: 4px;}
+             .btn-sm { padding: 3px 8px; font-size: 0.7rem; height: auto;}
+             input[type="text"], input[type="url"], input[type="search"], select { height: 34px; font-size: 0.85rem; }
+             textarea { min-height: 34px;}
+             .status-badge { padding: 3px 8px; font-size: 0.7rem;}
+             .toolbar-section { justify-content: center;}
+        }
+
+         #footer-info {
+             text-align: right;
+             margin-top: 15px;
+             font-size: 0.85em;
+             color: var(--text-light);
+         }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-list-check"></i> Editor M3U Pro+</h1>
+            <div class="header-info">
+                 <span id="file-name-display">Ningún archivo cargado</span>
+                 <button id="clear-storage-btn" class="btn btn-sm btn-outline-danger" title="Borrar sesión local"><i class="fas fa-eraser"></i> Sesión</button>
+             </div>
+        </header>
+
+        <div id="toast-container"></div>
+        <div id="loading-overlay"><div class="spinner"></div><span id="loading-message">Cargando...</span></div>
+
+        <div class="toolbar">
+             <div class="toolbar-section">
+                <button class="btn btn-primary" id="open-btn"><i class="fas fa-folder-open"></i> Abrir</button>
+                <input type="file" id="file-input" accept=".m3u,.m3u8" style="display: none;">
+                <button class="btn btn-outline-info" id="compare-btn"><i class="fas fa-exchange-alt"></i> Comparar</button>
+                <input type="file" id="compare-file-input" accept=".m3u,.m3u8" style="display: none;">
+                <button class="btn btn-success" id="save-btn"><i class="fas fa-save"></i> Guardar</button>
+                <button class="btn btn-outline-secondary" id="new-list-btn"><i class="fas fa-file"></i> Nueva</button>
+            </div>
+            <div class="separator" aria-hidden="true"></div>
+            <div class="toolbar-section">
+                <button class="btn btn-info" id="add-channel-btn"><i class="fas fa-plus"></i> Añadir Canal</button>
+                <button class="btn btn-outline-primary" id="group-selected-btn"><i class="fas fa-tags"></i> Agrupar Sel.</button>
+                <button class="btn btn-outline-secondary" id="validate-urls-btn"><i class="fas fa-network-wired"></i> Validar URLs</button>
+                <button class="btn btn-outline-secondary" id="find-duplicates-btn"><i class="fas fa-copy"></i> Duplicados</button>
+                <button class="btn btn-danger" id="delete-selected-btn"><i class="fas fa-trash"></i> Eliminar Sel.</button>
+                <button class="btn btn-outline-secondary" id="clear-selection-btn"><i class="fas fa-eraser"></i> Limpiar Sel.</button>
+                <button class="btn btn-outline-primary" id="manage-groups-btn"><i class="fas fa-layer-group"></i> Orden Grupos</button>
+            </div>
+             <div class="separator" aria-hidden="true"></div>
+             <div class="toolbar-section grow">
+                 <input type="search" id="search-input" placeholder="Buscar en la lista..." aria-label="Buscar canales">
+                 <select id="group-filter" aria-label="Filtrar por grupo"> <option value="">-- Todos los Grupos --</option> </select>
+                 <button class="btn btn-outline-warning" id="toggle-favorites-btn" title="Mostrar solo favoritos"><i class="far fa-star"></i> Favoritos</button>
+             </div>
+        </div>
+
+        <div class="groups-container" id="groups-container" style="display: none;">
+            <h3>Gestionar Orden de Grupos</h3>
+            <p>Arrastra <i class="fas fa-grip-lines"></i> para reordenar los grupos. Los cambios afectarán el orden en la tabla y el archivo guardado. Usa <i class="fas fa-pencil-alt"></i> para editar detalles.</p>
+            <div id="groups-list"></div>
+        </div>
+
+        <div class="table-container">
+            <table id="channels-table">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell"><input type="checkbox" id="select-all" aria-label="Seleccionar todo lo visible"></th>
+                        <th class="index-cell">#</th>
+                        <th class="logo-cell">Logo</th>
+                        <th class="name-cell sortable" data-sort="name">Nombre <i class="fas fa-sort"></i></th>
+                        <th class="url-cell">URL</th>
+                        <th class="group-cell sortable" data-sort="group-title">Grupo <i class="fas fa-sort"></i></th>
+                        <th class="status-cell">Estado</th>
+                        <th class="actions-cell">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="8" style="text-align:center; padding: 40px 20px; color: var(--text-light);">Carga un archivo M3U o crea una nueva lista para empezar a editar.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="footer-info">
+            Total: <span id="channel-count">0</span> | Mostrando: <span id="visible-channel-count">0</span>
+        </div>
+    </div>
+
+    <div class="context-menu" id="context-menu">
+        <div class="context-menu-item" data-action="edit"><i class="fas fa-edit fa-fw"></i> Editar Canal</div>
+        <div class="context-menu-item" data-action="toggle-favorite"><i class="far fa-star fa-fw"></i> Marcar Favorito</div>
+        <div class="context-menu-item" data-action="change-group"><i class="fas fa-folder-tree fa-fw"></i> Cambiar Grupo</div>
+        <div class="context-menu-item" data-action="validate"><i class="fas fa-check-circle fa-fw"></i> Validar URL</div>
+        <div class="context-menu-item" data-action="copy-url"><i class="fas fa-copy fa-fw"></i> Copiar URL</div>
+        <hr>
+        <div class="context-menu-item" data-action="delete"><i class="fas fa-trash fa-fw"></i> Eliminar Canal</div>
+    </div>
+
+    <div id="channel-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title">Editar Canal</h5>
+                <button type="button" class="modal-close" data-dismiss="modal" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal-channel-index">
+                <div><label for="modal-channel-name">Nombre del Canal:</label><input type="text" id="modal-channel-name" required></div>
+                <div><label for="modal-channel-url">URL del Stream:</label><input type="url" id="modal-channel-url" required></div>
+                <div><label for="modal-channel-group">Grupo (group-title):</label><input type="text" id="modal-channel-group"></div>
+                <div><label for="modal-channel-logo">URL del Logo (tvg-logo):</label><input type="url" id="modal-channel-logo"></div>
+                <div><label for="modal-channel-tvg-id">ID EPG (tvg-id):</label><input type="text" id="modal-channel-tvg-id"></div>
+                <hr style="margin: 25px 0;">
+                <h6>Propiedades KODI (Opcional)</h6>
+                <div><label for="modal-kodi-license-type">Tipo de Licencia (license_type):</label><input type="text" id="modal-kodi-license-type"></div>
+                <div><label for="modal-kodi-license-key">Clave/URL de Licencia (license_key):</label><textarea id="modal-kodi-license-key" rows="3"></textarea></div>
+                <div><label for="modal-kodi-stream-headers">Cabeceras del Stream (stream_headers):</label><textarea id="modal-kodi-stream-headers" rows="3"></textarea></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modal-save-btn">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="group-change-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Cambiar Grupo del Canal</h5> <button type="button" class="modal-close" data-dismiss="modal" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="group-change-channel-index">
+                <p>Selecciona el nuevo grupo para: <strong id="group-change-channel-name"></strong></p>
+                <div id="group-change-options-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="group-change-save-btn">Confirmar Cambio</button>
+            </div>
+        </div>
+    </div>
+
+     <div id="group-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="group-modal-title">Editar Detalles del Grupo</h5>
+                <button type="button" class="modal-close" data-dismiss="modal" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modal-group-id">
+                <div><label for="modal-group-name">Nombre del Grupo:</label><input type="text" id="modal-group-name" required></div>
+                <div><label for="modal-group-logo">URL del Logo del Grupo (group-logo, opcional):</label><input type="url" id="modal-group-logo"></div>
+                <p style="font-size: 0.85em; color: var(--text-light); margin-top: 15px;">Cambiar el nombre aquí actualizará la propiedad 'group-title' para todos los canales actualmente en este grupo.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="modal-group-save-btn">Guardar Detalles</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="compare-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"> <h5 class="modal-title">Comparar Listas M3U</h5> <button type="button" class="modal-close" data-dismiss="compare-modal">×</button> </div>
+            <div class="modal-body">
+                <p>Comparando lista <strong><span id="compare-list-a-name">Actual</span></strong> con <strong><span id="compare-list-b-name">Otra</span></strong> basada en URLs.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div> <h6><i class="fas fa-arrow-down"></i> Sólo en <span class="compare-list-a-name-dynamic">Actual</span> (<span id="count-only-a">0</span>)</h6> <ul id="compare-list-a"></ul> </div>
+                    <div> <h6><i class="fas fa-check-double"></i> Comunes (<span id="count-common">0</span>)</h6> <p style="font-size: 0.8em; color: var(--text-light); margin-top: -5px;"><span class="compare-diff">Resaltado</span>=diferencias detectadas.</p> <ul id="compare-list-common"></ul> </div>
+                    <div> <h6><i class="fas fa-arrow-up"></i> Sólo en <span class="compare-list-b-name-dynamic">Otra</span> (<span id="count-only-b">0</span>)</h6> <ul id="compare-list-b"></ul> <button class="btn btn-sm btn-success" id="copy-missing-to-a-btn" style="margin-top: 10px;"><i class="fas fa-plus-circle"></i> Añadir Faltantes a <span class="compare-list-a-name-dynamic">Actual</span></button> </div>
+                </div>
+            </div>
+            <div class="modal-footer"> <button type="button" class="btn btn-primary" id="merge-lists-btn"><i class="fas fa-compress-alt"></i> Fusionar (Añadir Nuevos de B a A)</button> <button type="button" class="btn btn-outline-secondary" data-dismiss="compare-modal">Cerrar Comparación</button> </div>
+        </div>
+    </div>
+
+    <div id="duplicates-modal" class="modal">
+         <div class="modal-content">
+             <div class="modal-header"> <h5 class="modal-title">Canales con URL Duplicada</h5> <button type="button" class="modal-close" data-dismiss="duplicates-modal">×</button> </div>
+             <div class="modal-body" id="duplicates-list-container"> <p style="font-size: 0.9em;">Se encontraron grupos de canales que comparten la misma URL. Puedes eliminar las repeticiones para cada URL, conservando sólo la primera aparición encontrada.</p> <div id="duplicates-list"></div> </div>
+             <div class="modal-footer"> <button type="button" class="btn btn-outline-secondary" data-dismiss="duplicates-modal">Cerrar</button> </div>
+         </div>
+     </div>
+
+     <div id="confirm-modal" class="modal">
+         <div class="modal-content" style="max-width: 450px;">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="confirm-modal-title">Confirmar Acción</h5>
+                 <button type="button" class="modal-close" data-dismiss="confirm-modal" aria-label="Cerrar">×</button>
+             </div>
+             <div class="modal-body">
+                 <p id="confirm-modal-text">¿Estás seguro de que deseas realizar esta acción?</p>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-outline-secondary" id="confirm-modal-cancel-btn" data-dismiss="confirm-modal">Cancelar</button>
+                 <button type="button" class="btn btn-danger" id="confirm-modal-confirm-btn">Confirmar</button>
+             </div>
+         </div>
+     </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script>
+        let channels = [];
+        let selectedChannels = new Set();
+        let showOnlyFavorites = false;
+        let currentGroupFilter = '';
+        let currentFileName = '';
+        let currentSort = { column: null, direction: 'asc' };
+        let sortableInstance = null;
+        let groupSortableInstance = null;
+        let validationInProgress = false;
+        let groupOrder = [];
+        let collapsedGroups = new Set();
+        let comparisonChannels = [];
+        let comparisonFileName = '';
+        let duplicatesModified = false;
+
+        const LOCAL_STORAGE_KEY = 'm3uEditorProPlus_sessionData_v2';
+
+        const fileInput = document.getElementById('file-input');
+        const compareFileInput = document.getElementById('compare-file-input');
+        const tableBody = document.getElementById('table-body');
+        const selectAllCheckbox = document.getElementById('select-all');
+        const searchInput = document.getElementById('search-input');
+        const groupFilterSelect = document.getElementById('group-filter');
+        const toggleFavoritesBtn = document.getElementById('toggle-favorites-btn');
+        const contextMenu = document.getElementById('context-menu');
+        const channelModal = document.getElementById('channel-modal');
+        const groupModal = document.getElementById('group-modal');
+        const groupChangeModal = document.getElementById('group-change-modal');
+        const compareModal = document.getElementById('compare-modal');
+        const duplicatesModal = document.getElementById('duplicates-modal');
+        const confirmModal = document.getElementById('confirm-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalChannelIndex = document.getElementById('modal-channel-index');
+        const modalChannelName = document.getElementById('modal-channel-name');
+        const modalChannelUrl = document.getElementById('modal-channel-url');
+        const modalChannelGroup = document.getElementById('modal-channel-group');
+        const modalChannelLogo = document.getElementById('modal-channel-logo');
+        const modalChannelTvgId = document.getElementById('modal-channel-tvg-id');
+        const modalGroupId = document.getElementById('modal-group-id');
+        const modalGroupName = document.getElementById('modal-group-name');
+        const modalGroupLogo = document.getElementById('modal-group-logo');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingMessage = document.getElementById('loading-message');
+        const toastContainer = document.getElementById('toast-container');
+        const channelCountSpan = document.getElementById('channel-count');
+        const visibleChannelCountSpan = document.getElementById('visible-channel-count');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const groupsContainer = document.getElementById('groups-container');
+        const groupsList = document.getElementById('groups-list');
+        const duplicatesListDiv = document.getElementById('duplicates-list');
+
+
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+             return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function handleImageError(img) {
+            img.style.display = 'none';
+            const fallback = document.createElement('span');
+            fallback.textContent = '-';
+            if(img.parentNode) {
+                img.parentNode.appendChild(fallback);
+            }
+            img.onerror = null;
+        }
+
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let iconClass = 'fa-info-circle';
+            if (type === 'success') iconClass = 'fa-check-circle';
+            else if (type === 'error') iconClass = 'fa-exclamation-triangle';
+            else if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+            toast.innerHTML = `<i class="fas ${iconClass}"></i> ${escapeHtml(message)}`;
+            toastContainer.appendChild(toast);
+            toast.offsetHeight;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+             }, duration);
+        }
+
+        function setLoading(isLoading, message = 'Procesando...') {
+            loadingMessage.textContent = message;
+            loadingOverlay.style.display = isLoading ? 'flex' : 'none';
+            document.querySelectorAll('.btn, input, select, button, textarea').forEach(el => {
+                 if (el.id !== 'file-input' && el.id !== 'compare-file-input') {
+                    const isDismissButton = el.closest('[data-dismiss]') || el.classList.contains('modal-close') || el.closest('[data-dismiss="confirm-modal"]');
+                    el.disabled = isLoading && !isDismissButton;
+                }
+            });
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        const triggerLocalStorageSave = debounce(() => saveToLocalStorage(), 1500);
+
+        function copyToClipboard(text, successMessage) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(successMessage || 'Texto copiado al portapapeles.', 'success', 1500);
+             }, (err) => {
+                showToast('Error al intentar copiar texto.', 'error');
+                console.error('Error al copiar: ', err);
+            });
+        }
+
+         function showConfirmationModal(message, title = 'Confirmar Acción', confirmButtonText = 'Confirmar', confirmButtonClass = 'btn-danger') {
+             return new Promise((resolve) => {
+                const confirmTitleEl = document.getElementById('confirm-modal-title');
+                const confirmTextEl = document.getElementById('confirm-modal-text');
+                const confirmBtnEl = document.getElementById('confirm-modal-confirm-btn');
+                const cancelBtnEl = document.getElementById('confirm-modal-cancel-btn');
+
+                confirmTitleEl.textContent = title;
+                confirmTextEl.innerHTML = message;
+                confirmBtnEl.textContent = confirmButtonText;
+                confirmBtnEl.className = `btn ${confirmButtonClass}`;
+
+                const close = (result) => {
+                    confirmModal.style.display = 'none';
+                    confirmBtnEl.onclick = null;
+                    cancelBtnEl.onclick = null;
+                    confirmModal.querySelectorAll('[data-dismiss="confirm-modal"], .modal-close').forEach(btn => btn.onclick = null);
+                    confirmModal.onclick = null;
+                    resolve(result);
+                }
+
+                confirmBtnEl.onclick = () => close(true);
+                cancelBtnEl.onclick = () => close(false);
+
+                confirmModal.querySelectorAll('[data-dismiss="confirm-modal"], .modal-close').forEach(btn => {
+                   btn.onclick = (e) => {
+                        e.stopPropagation();
+                        close(false);
+                   }
+                });
+                confirmModal.onclick = (e) => { if (e.target === confirmModal) close(false); };
+
+                confirmModal.style.display = 'flex';
+                confirmBtnEl.focus();
+            });
+        }
+
+
+        function openChannelModal(index = null) {
+            const isEditing = index !== null && channels[index];
+            if (isEditing) {
+                const channel = channels[index];
+                modalTitle.textContent = 'Editar Canal Existente';
+                modalChannelIndex.value = channels.findIndex(ch => ch === channel);
+                modalChannelName.value = channel.name || '';
+                modalChannelUrl.value = channel.url || '';
+                modalChannelGroup.value = channel['group-title'] || '';
+                modalChannelLogo.value = channel['tvg-logo'] || '';
+                modalChannelTvgId.value = channel['tvg-id'] || '';
+                const kodiProps = channel.kodiProps || {};
+                document.getElementById('modal-kodi-license-type').value = kodiProps['inputstream.adaptive.license_type'] || '';
+                document.getElementById('modal-kodi-license-key').value = kodiProps['inputstream.adaptive.license_key'] || '';
+                document.getElementById('modal-kodi-stream-headers').value = kodiProps['inputstream.adaptive.stream_headers'] || '';
+            } else {
+                modalTitle.textContent = 'Añadir Nuevo Canal';
+                modalChannelIndex.value = '';
+                modalChannelName.value = '';
+                modalChannelUrl.value = '';
+                modalChannelGroup.value = '';
+                modalChannelLogo.value = '';
+                modalChannelTvgId.value = '';
+                document.getElementById('modal-kodi-license-type').value = '';
+                document.getElementById('modal-kodi-license-key').value = '';
+                document.getElementById('modal-kodi-stream-headers').value = '';
+            }
+            channelModal.style.display = 'flex';
+            modalChannelName.focus();
+        }
+        function closeChannelModal() { channelModal.style.display = 'none'; }
+
+        function openGroupEditModal(group) {
+             if (group === undefined || group === null || group === '') return;
+             const firstChannel = channels.find(ch => ch['group-title'] === group);
+             const groupLogo = firstChannel?.['group-logo'] || '';
+             modalGroupId.value = group;
+             modalGroupName.value = group || '';
+             modalGroupLogo.value = groupLogo;
+             document.getElementById('group-modal-title').textContent = `Editar Grupo: ${escapeHtml(group)}`;
+             groupModal.style.display = 'flex';
+             modalGroupName.focus();
+        }
+        function closeGroupEditModal() { groupModal.style.display = 'none'; }
+
+        function openGroupChangeModal(index) {
+             if (index === null || !channels[index]) return;
+             const channel = channels[index];
+             const channelNameEl = document.getElementById('group-change-channel-name');
+             const optionsListEl = document.getElementById('group-change-options-list');
+             const hiddenIndexInput = document.getElementById('group-change-channel-index');
+
+             hiddenIndexInput.value = index;
+             channelNameEl.textContent = escapeHtml(channel.name || `Canal ${index + 1}`);
+             optionsListEl.innerHTML = '';
+
+             groupOrder.forEach(group => {
+                 const isCurrent = (channel['group-title'] || '') === group;
+                 const displayName = group === '' ? '(Sin Grupo)' : escapeHtml(group);
+                 const optionId = `group-option-${group.replace(/[^a-zA-Z0-9]/g, '') || 'nogroup'}${Date.now()}`;
+                 const optionWrapper = document.createElement('label');
+                 optionWrapper.htmlFor = optionId;
+                 optionWrapper.className = `group-change-option ${isCurrent ? 'selected' : ''}`;
+                 optionWrapper.dataset.group = group;
+
+                 const radioInput = document.createElement('input');
+                 radioInput.type = 'radio';
+                 radioInput.name = 'groupChangeOption';
+                 radioInput.id = optionId;
+                 radioInput.value = group;
+                 radioInput.checked = isCurrent;
+
+                 optionWrapper.appendChild(radioInput);
+                 optionWrapper.appendChild(document.createTextNode(displayName));
+                 optionsListEl.appendChild(optionWrapper);
+
+                 optionWrapper.addEventListener('click', () => {
+                     optionsListEl.querySelectorAll('.group-change-option').forEach(opt => opt.classList.remove('selected'));
+                     optionWrapper.classList.add('selected');
+                     radioInput.checked = true;
+                 });
+             });
+             groupChangeModal.style.display = 'flex';
+        }
+        function closeGroupChangeModal() { groupChangeModal.style.display = 'none'; }
+
+        function openCompareModal() { compareModal.style.display = 'flex'; }
+        function closeCompareModal() { compareModal.style.display = 'none'; }
+
+        function openDuplicatesModal() { duplicatesModal.style.display = 'flex'; duplicatesModified = false; }
+        function closeDuplicatesModal() {
+            duplicatesModal.style.display = 'none';
+            if (duplicatesModified) {
+                renderTable();
+            }
+        }
+
+        function closeModal(modalElement) {
+            if (modalElement) {
+                 modalElement.style.display = 'none';
+            }
+        }
+
+        function handleModalSave() {
+            const indexStr = modalChannelIndex.value;
+            const index = indexStr !== '' ? parseInt(indexStr) : null;
+            const name = modalChannelName.value.trim();
+            const url = modalChannelUrl.value.trim();
+            const group = modalChannelGroup.value.trim();
+            const logo = modalChannelLogo.value.trim();
+            const tvgId = modalChannelTvgId.value.trim();
+            const kodiLicenseType = document.getElementById('modal-kodi-license-type').value.trim();
+            const kodiLicenseKey = document.getElementById('modal-kodi-license-key').value.trim();
+            const kodiStreamHeaders = document.getElementById('modal-kodi-stream-headers').value.trim();
+
+            if (!name) { showToast('El nombre del canal es obligatorio.', 'error'); modalChannelName.focus(); return; }
+            if (!url || !(/^(https?|rtmp|rtsp|udp|http|hls):\/\//i.test(url) || url.startsWith('/'))) {
+                showToast('La URL proporcionada no parece válida.', 'error'); modalChannelUrl.focus(); return;
+            }
+
+            let channelData;
+            const isNewChannel = index === null;
+            let currentKodiProps = {};
+            let oldGroup = '';
+
+            if (isNewChannel) {
+                channelData = { name: name, url: url, kodiProps: {}, vlcOptions: {}, attributes: {}, favorite: false, active: null, 'group-title': group, 'tvg-logo': logo, 'tvg-id': tvgId, 'tvg-name': '', originalIndex: -1 };
+                 channelData['tvg-name'] = tvgId ? name : name;
+                 channelData.originalIndex = channels.length;
+                currentKodiProps = channelData.kodiProps;
+            } else {
+                if (!channels[index]) { showToast('Error: Canal no encontrado para actualizar.', 'error'); closeChannelModal(); return; }
+                channelData = channels[index];
+                oldGroup = channelData['group-title'] || '';
+                channelData.name = name;
+                channelData.url = url;
+                channelData['group-title'] = group;
+                channelData['tvg-logo'] = logo;
+                channelData['tvg-id'] = tvgId;
+                 channelData['tvg-name'] = tvgId ? name : name;
+                channelData.kodiProps = channelData.kodiProps || {};
+                currentKodiProps = channelData.kodiProps;
+            }
+
+            if (kodiLicenseType) currentKodiProps['inputstream.adaptive.license_type'] = kodiLicenseType; else delete currentKodiProps['inputstream.adaptive.license_type'];
+            if (kodiLicenseKey) currentKodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey; else delete currentKodiProps['inputstream.adaptive.license_key'];
+            if (kodiStreamHeaders) currentKodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders; else delete currentKodiProps['inputstream.adaptive.stream_headers'];
+
+            channelData.attributes = channelData.attributes || {};
+            channelData.attributes['group-title'] = group;
+            channelData.attributes['tvg-logo'] = logo;
+            channelData.attributes['tvg-id'] = tvgId;
+            channelData.attributes['tvg-name'] = channelData['tvg-name'];
+
+
+            if (isNewChannel) channels.push(channelData);
+            else channels[index] = channelData;
+
+
+            updateGroupOrderIfNeeded(oldGroup, group);
+             channels.forEach((ch, idx) => ch.originalIndex = idx);
+            renderTable();
+            updateGroupFilter();
+            if (groupsContainer.style.display === 'block') renderGroups();
+            showToast(isNewChannel ? 'Nuevo canal añadido correctamente.' : 'Canal actualizado correctamente.', 'success');
+            closeChannelModal();
+            triggerLocalStorageSave();
+        }
+
+        async function handleGroupEditModalSave() {
+             const oldGroup = modalGroupId.value;
+             const newGroup = modalGroupName.value.trim();
+             const groupLogo = modalGroupLogo.value.trim();
+
+             if (!newGroup && oldGroup !== '') {
+                showToast('El nombre de grupo no puede quedar vacío si el grupo original tenía nombre.', 'error');
+                modalGroupName.focus();
+                return;
+             }
+
+             const firstOldChannel = channels.find(ch => ch['group-title'] === oldGroup);
+             const oldLogo = firstOldChannel?.['group-logo'] || '';
+
+             if (newGroup === oldGroup && groupLogo === oldLogo) {
+                showToast('No se detectaron cambios en el nombre o logo del grupo.', 'info');
+                closeGroupEditModal();
+                return;
+             }
+
+             if (newGroup !== oldGroup && groupOrder.includes(newGroup)) {
+                 const userConfirmed = await showConfirmationModal(
+                     `El grupo "${escapeHtml(newGroup)}" ya existe. ¿Deseas fusionar los canales del grupo "${escapeHtml(oldGroup)}" en él?`,
+                     'Confirmar Fusión de Grupos',
+                     'Sí, Fusionar',
+                     'btn-warning'
+                 );
+                 if (!userConfirmed) {
+                     modalGroupName.focus();
+                     return;
+                 }
+             }
+
+             channels.forEach(ch => {
+                if (ch['group-title'] === oldGroup) {
+                    ch['group-title'] = newGroup;
+                    ch.attributes = ch.attributes || {};
+                    ch.attributes['group-title'] = newGroup;
+                    ch['group-logo'] = groupLogo;
+                     ch.attributes['group-logo'] = groupLogo;
+                }
+             });
+
+             updateGroupOrderAfterRename(oldGroup, newGroup);
+             renderTable();
+             if (groupsContainer.style.display === 'block') renderGroups();
+             updateGroupFilter();
+             showToast(`Grupo "${escapeHtml(oldGroup)}" actualizado a "${escapeHtml(newGroup)}" y aplicado a sus canales.`, 'success');
+             closeGroupEditModal();
+             triggerLocalStorageSave();
+         }
+
+        function handleGroupChangeSave() {
+             const indexStr = document.getElementById('group-change-channel-index').value;
+             const index = indexStr !== '' ? parseInt(indexStr) : null;
+             const selectedOption = document.querySelector('#group-change-options-list input[name="groupChangeOption"]:checked');
+
+             if (index === null || !channels[index] || !selectedOption) {
+                showToast('Error al procesar el cambio de grupo.', 'error');
+                closeGroupChangeModal();
+                return;
+             }
+
+             const newGroup = selectedOption.value;
+             const oldGroup = channels[index]['group-title'] || '';
+
+             if (newGroup === oldGroup) {
+                 showToast('El canal ya pertenece a este grupo.', 'info');
+                 closeGroupChangeModal();
+                 return;
+             }
+
+             channels[index]['group-title'] = newGroup;
+             channels[index].attributes = channels[index].attributes || {};
+             channels[index].attributes['group-title'] = newGroup;
+
+
+             updateGroupOrderIfNeeded(oldGroup, newGroup);
+             renderTable();
+             updateGroupFilter();
+             if (groupsContainer.style.display === 'block') renderGroups();
+
+             showToast(`Canal movido al grupo "${newGroup === '' ? '(Sin Grupo)' : escapeHtml(newGroup)}".`, 'success');
+             closeGroupChangeModal();
+             triggerLocalStorageSave();
+         }
+
+        function initEventListeners() {
+            document.getElementById('open-btn').addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            document.getElementById('compare-btn').addEventListener('click', () => compareFileInput.click());
+            compareFileInput.addEventListener('change', handleCompareFileSelect);
+            document.getElementById('save-btn').addEventListener('click', saveToFile);
+            document.getElementById('new-list-btn').addEventListener('click', handleNewList);
+            document.getElementById('add-channel-btn').addEventListener('click', () => openChannelModal());
+            document.getElementById('group-selected-btn').addEventListener('click', groupSelectedChannels);
+            document.getElementById('delete-selected-btn').addEventListener('click', deleteSelectedChannels);
+            document.getElementById('validate-urls-btn').addEventListener('click', validateAllUrls);
+            document.getElementById('find-duplicates-btn').addEventListener('click', findAndShowDuplicatesModal);
+            document.getElementById('clear-selection-btn').addEventListener('click', clearSelection);
+            document.getElementById('manage-groups-btn').addEventListener('click', toggleGroupsContainer);
+            toggleFavoritesBtn.addEventListener('click', toggleFavoritesFilter);
+            searchInput.addEventListener('input', debounce(renderTable, 300));
+            groupFilterSelect.addEventListener('change', (e) => { currentGroupFilter = e.target.value; renderTable(); triggerLocalStorageSave(); });
+            document.querySelectorAll('#channels-table th.sortable').forEach(th => { th.addEventListener('click', () => handleSort(th.dataset.sort)); });
+            selectAllCheckbox.addEventListener('change', handleSelectAll);
+            tableBody.addEventListener('change', handleRowCheckboxChange);
+            tableBody.addEventListener('contextmenu', handleContextMenu);
+            tableBody.addEventListener('click', handleTableClick);
+            document.addEventListener('click', (e) => { if (!contextMenu.contains(e.target)) { contextMenu.style.display = 'none'; } });
+            contextMenu.addEventListener('click', handleContextMenuAction);
+
+            channelModal.addEventListener('click', (e) => { if (e.target.closest('[data-dismiss="modal"]') || e.target === channelModal) { closeChannelModal(); } });
+            document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
+
+            groupModal.addEventListener('click', (e) => { if (e.target.closest('[data-dismiss="modal"]') || e.target === groupModal) { closeGroupEditModal(); } });
+            document.getElementById('modal-group-save-btn').addEventListener('click', handleGroupEditModalSave);
+
+            groupChangeModal.addEventListener('click', (e) => { if (e.target.closest('[data-dismiss="modal"]') || e.target === groupChangeModal) { closeGroupChangeModal(); } });
+            document.getElementById('group-change-save-btn').addEventListener('click', handleGroupChangeSave);
+
+            compareModal.addEventListener('click', (e) => { if (e.target.closest('[data-dismiss="compare-modal"]') || e.target === compareModal) { closeCompareModal(); }});
+            document.getElementById('copy-missing-to-a-btn').addEventListener('click', copyMissingChannelsToA);
+            document.getElementById('merge-lists-btn').addEventListener('click', mergeLists);
+
+            duplicatesModal.addEventListener('click', (e) => { if (e.target.closest('[data-dismiss="duplicates-modal"]') || e.target === duplicatesModal) { closeDuplicatesModal(); }});
+            duplicatesListDiv.addEventListener('click', handleDeleteDuplicatesForUrl);
+
+            groupsList.addEventListener('click', handleGroupListClick);
+
+             confirmModal.addEventListener('click', (e) => { if (e.target.closest('[data-dismiss="confirm-modal"]')) { closeModal(confirmModal); } });
+
+
+            const clearStorageBtn = document.getElementById('clear-storage-btn');
+            if (clearStorageBtn) {
+                 clearStorageBtn.addEventListener('click', async () => {
+                    const userConfirmed = await showConfirmationModal(
+                         '¿Estás seguro de que deseas borrar la sesión guardada en este navegador? Esta acción no se puede deshacer.',
+                         'Confirmar Borrado de Sesión',
+                         'Sí, Borrar Sesión',
+                         'btn-danger'
+                     );
+                    if (userConfirmed) {
+                        clearLocalStorage();
+                        showToast('Sesión local borrada correctamente.', 'info');
+                         channels = [];
+                         groupOrder = [];
+                         selectedChannels.clear();
+                         currentFileName = '';
+                         currentSort = { column: null, direction: 'asc' };
+                         currentGroupFilter = '';
+                         showOnlyFavorites = false;
+                         searchInput.value = '';
+                         collapsedGroups.clear();
+                         handleNewList();
+                    }
+                });
+            }
+        }
+
+        function initSortable() {
+            if (sortableInstance) sortableInstance.destroy();
+            sortableInstance = new Sortable(tableBody, {
+                animation: 150,
+                handle: '.drag-handle',
+                filter: 'input, button, select, textarea, .action-edit, .action-fav, .action-delete, .action-change-group, .group-header-row',
+                preventOnFilter: true,
+                group: 'channels-group',
+                draggable: '.channel-row',
+                onEnd: (evt) => {
+                    if (evt.oldIndex === evt.newIndex && evt.from === evt.to) {
+                         return;
+                    }
+
+                    const movedRow = evt.item;
+                    if (!movedRow || !movedRow.dataset.index) return;
+                    const originalDataIndex = parseInt(movedRow.dataset.index);
+
+                    const currentArrayIndex = channels.findIndex(ch => ch && ch.originalIndex === originalDataIndex);
+
+                    if (currentArrayIndex === -1 || !channels[currentArrayIndex]) {
+                        console.error("Error: Moved channel not found in data array. Original index:", originalDataIndex);
+                        showToast('Error interno al mover canal.', 'error');
+                        renderTable();
+                        return;
+                    }
+
+                    const movedChannel = { ...channels[currentArrayIndex] };
+                    const oldGroup = movedChannel['group-title'] || '';
+
+                    let targetGroup = '';
+                    let previousElement = movedRow.previousElementSibling;
+                    while (previousElement) {
+                        if (previousElement.classList.contains('group-header-row') && previousElement.dataset.group !== undefined) {
+                            targetGroup = previousElement.dataset.group;
+                            break;
+                        }
+                        previousElement = previousElement.previousElementSibling;
+                    }
+                    targetGroup = targetGroup || '';
+
+                    movedChannel['group-title'] = targetGroup;
+                    movedChannel.attributes = movedChannel.attributes || {};
+                    movedChannel.attributes['group-title'] = targetGroup;
+
+
+                    channels.splice(currentArrayIndex, 1);
+
+                    const visibleRows = Array.from(evt.to.querySelectorAll('.channel-row'));
+                    const newDomIndex = visibleRows.indexOf(movedRow);
+
+                    let insertBeforeOriginalIndex = -1;
+                    if (newDomIndex === visibleRows.length - 1) {
+                         insertBeforeOriginalIndex = -1;
+                    } else {
+                        const nextVisibleRow = visibleRows[newDomIndex + 1];
+                         if (nextVisibleRow && nextVisibleRow.dataset.index) {
+                            insertBeforeOriginalIndex = parseInt(nextVisibleRow.dataset.index);
+                         }
+                     }
+
+                     let targetArrayIndex = -1;
+                     if(insertBeforeOriginalIndex !== -1) {
+                        targetArrayIndex = channels.findIndex(ch => ch.originalIndex === insertBeforeOriginalIndex);
+                     }
+
+                    if (targetArrayIndex !== -1) {
+                         channels.splice(targetArrayIndex, 0, movedChannel);
+                     } else {
+                        channels.push(movedChannel);
+                    }
+
+
+                    channels.forEach((ch, idx) => ch.originalIndex = idx);
+
+
+                    updateGroupOrderIfNeeded(oldGroup, targetGroup);
+
+                    clearSelection();
+                    renderTable();
+                    triggerLocalStorageSave();
+                    showToast(`Canal movido a "${targetGroup === '' ? '(Sin Grupo)' : escapeHtml(targetGroup)}".`, 'info', 2000);
+                }
+            });
+        }
+
+
+        function initGroupSortable() {
+             if (groupSortableInstance) groupSortableInstance.destroy();
+             groupSortableInstance = new Sortable(groupsList, {
+                 animation: 150,
+                 handle: '.group-drag-handle',
+                 filter:'.edit-group-details',
+                 preventOnFilter: true,
+                 onEnd: (evt) => {
+                     if (evt.oldIndex === evt.newIndex) return;
+                     const [movedGroup] = groupOrder.splice(evt.oldIndex, 1);
+                     groupOrder.splice(evt.newIndex, 0, movedGroup);
+                     renderTable();
+                     renderGroups();
+                     updateGroupFilter();
+                     triggerLocalStorageSave();
+                     showToast('Orden de grupos actualizado.', 'info', 1500);
+                 }
+             });
+         }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            currentFileName = file.name;
+            fileNameDisplay.textContent = `${escapeHtml(currentFileName)}`;
+            setLoading(true, 'Leyendo archivo M3U...');
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    channels = parseM3U(ev.target.result);
+                    channels.forEach((ch, idx) => {
+                        ch.originalIndex = idx;
+                        ch.active = null;
+                        ch.favorite = ch.attributes?.favorite === 'true' || false;
+                        ch.attributes = ch.attributes || {};
+                        ch.kodiProps = ch.kodiProps || {};
+                        ch.vlcOptions = ch.vlcOptions || {};
+                    });
+                    updateGroupOrder();
+                    collapsedGroups.clear();
+                    showToast(`Archivo "${escapeHtml(currentFileName)}" cargado (${channels.length} canales)`, 'success');
+                } catch (error) {
+                    showToast(`Error al procesar el archivo: ${escapeHtml(error.message)}`, 'error', 5000);
+                    channels = [];
+                    groupOrder = [];
+                    collapsedGroups.clear();
+                     console.error("Error parsing M3U:", error);
+                } finally {
+                    clearSelection();
+                    currentSort = { column: null, direction: 'asc' };
+                    renderTable();
+                    renderGroups();
+                    updateGroupFilter();
+                    setLoading(false);
+                    fileInput.value = '';
+                    triggerLocalStorageSave();
+                }
+            };
+            reader.onerror = () => {
+                showToast('Error al intentar leer el archivo.', 'error');
+                setLoading(false);
+                fileInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function handleCompareFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (channels.length === 0) {
+                showToast('Primero carga o crea una lista principal para poder comparar.', 'warning');
+                compareFileInput.value = '';
+                return;
+             }
+            comparisonFileName = file.name;
+            setLoading(true, `Leyendo archivo para comparación...`);
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    comparisonChannels = parseM3U(ev.target.result);
+                    comparisonChannels.forEach((ch, idx) => {
+                         ch.originalIndex = idx; ch.active = null; ch.favorite = ch.attributes?.favorite === 'true'; ch.attributes = ch.attributes || {}; ch.kodiProps = ch.kodiProps || {}; ch.vlcOptions = ch.vlcOptions || {};
+                    });
+                    showToast(`Archivo de comparación "${escapeHtml(comparisonFileName)}" cargado (${comparisonChannels.length} canales). Realizando comparación...`, 'info', 4000);
+                    compareLists();
+                } catch (error) {
+                    showToast(`Error al procesar el archivo de comparación: ${escapeHtml(error.message)}`, 'error', 5000);
+                     console.error("Error parsing comparison M3U:", error);
+                    comparisonChannels = [];
+                    comparisonFileName = '';
+                } finally {
+                    setLoading(false);
+                    compareFileInput.value = '';
+                }
+            };
+            reader.onerror = () => {
+                showToast('Error al leer el archivo de comparación.', 'error');
+                setLoading(false);
+                comparisonChannels = [];
+                comparisonFileName = '';
+                compareFileInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function parseM3U(content) {
+             const lines = content.split(/[\r\n]+/).map(line => line.trim()).filter(line => line);
+             const parsedChannels = [];
+             let currentChannel = null;
+             let currentGroupFromEXTGRP = '';
+             let fileAttributes = {};
+
+             if (!lines[0] || !lines[0].startsWith('#EXTM3U')) {} else {
+                 const headerLine = lines[0];
+                 const headerAttrs = headerLine.substring(7).trim();
+                 const attrRegex = /([a-zA-Z0-9-]+(?:[:\.]?[a-zA-Z0-9-]+)*)=(?:"([^"]*)"|([^,\s]*))/g;
+                 let match;
+                 while ((match = attrRegex.exec(headerAttrs))) {
+                    const key = match[1].trim();
+                    const value = (match[2] !== undefined ? match[2] : match[3])?.trim();
+                    if (key && value !== undefined) fileAttributes[key] = value;
+                }
+             }
+
+             lines.forEach((line, index) => {
+                if (line.startsWith('#EXTINF:')) {
+                     currentChannel = { name: `Canal ${parsedChannels.length + 1}`, url: null, kodiProps: {}, vlcOptions: {}, attributes: {}, favorite: false, active: null, originalIndex: -1 };
+                    try {
+                        const infoMatch = line.match(/^#EXTINF:(-?\d+)(.*),(.*)$/);
+                        if (!infoMatch) throw new Error('Formato #EXTINF inválido');
+                        const attributesPart = infoMatch[2].trim();
+                        currentChannel.name = infoMatch[3].trim() || currentChannel.name;
+                        const attrRegex = /([a-zA-Z0-9-]+(?:[:\.]?[a-zA-Z0-9-]+)*)=(?:"([^"]*)"|([^,\s]*))/g;
+                        let match;
+                        while ((match = attrRegex.exec(attributesPart))) {
+                            const key = match[1].trim();
+                             const value = (match[2] !== undefined ? match[2] : match[3])?.trim();
+                             if (key && value !== undefined) currentChannel.attributes[key] = value;
+                        }
+                        currentChannel['group-title'] = currentChannel.attributes['group-title'] || currentGroupFromEXTGRP || '';
+                        currentChannel['tvg-logo'] = currentChannel.attributes['tvg-logo'] || '';
+                        currentChannel['tvg-id'] = currentChannel.attributes['tvg-id'] || '';
+                         currentChannel['tvg-name'] = currentChannel.attributes['tvg-name'] || (currentChannel['tvg-id'] ? currentChannel.name : currentChannel.name);
+
+                        currentChannel['group-logo'] = currentChannel.attributes['group-logo'] || '';
+                        currentChannel['ch-number'] = currentChannel.attributes['ch-number'] || '';
+                         currentChannel.favorite = currentChannel.attributes.favorite === 'true';
+                         delete currentChannel.attributes.favorite;
+                    } catch (e) {
+                        console.warn(`Error procesando #EXTINF en línea ${index + 1}: ${e.message}. Saltando canal.`);
+                        currentChannel = null;
+                    }
+                } else if (line.startsWith('#KODIPROP:') && currentChannel) {
+                    const propMatch = line.match(/#KODIPROP:(.+?)=(.*)/);
+                    if (propMatch && propMatch[1] && propMatch[2]) {
+                         currentChannel.kodiProps[propMatch[1].trim().toLowerCase()] = propMatch[2].trim();
+                    }
+                } else if (line.startsWith('#EXTVLCOPT:') && currentChannel) {
+                    const vlcMatch = line.match(/#EXTVLCOPT:(.+?)=(.+)/);
+                    if (vlcMatch && vlcMatch[1] && vlcMatch[2]) {
+                         currentChannel.vlcOptions[vlcMatch[1].trim().toLowerCase()] = vlcMatch[2].trim();
+                     }
+                } else if (line.startsWith('#EXTGRP:')) {
+                     currentGroupFromEXTGRP = line.substring(line.indexOf(':') + 1).trim();
+                 } else if (!line.startsWith('#') && currentChannel && !currentChannel.url) {
+                    const isValidUrl = /^(https?|rtmp|rtsp|udp|http|hls):/i.test(line) || line.startsWith('/') || line.includes('://');
+                     if (isValidUrl) {
+                        currentChannel.url = line;
+                        currentChannel.originalIndex = parsedChannels.length;
+                         parsedChannels.push(currentChannel);
+                        currentChannel = null;
+                     } else {
+                         console.warn(`Línea ${index + 1} no parece ser URL válida y sigue a un #EXTINF: "${line}". Saltando canal.`);
+                        currentChannel = null;
+                    }
+                 } else if (!line.startsWith('#') && !currentChannel) {
+                    const isValidUrl = /^(https?|rtmp|rtsp|udp|http|hls):/i.test(line) || line.startsWith('/') || line.includes('://');
+                    if(isValidUrl) {
+                         parsedChannels.push({ name: `Canal ${parsedChannels.length + 1}`, url: line, kodiProps: {}, vlcOptions: {}, attributes: {}, favorite: false, active: null, originalIndex: parsedChannels.length, 'group-title': currentGroupFromEXTGRP || '' });
+                     }
+                 }
+            });
+             return parsedChannels;
+         }
+
+        function saveToFile() {
+            if (channels.length === 0) {
+                 showToast('No hay canales para guardar en la lista.', 'warning');
+                 return;
+            }
+            setLoading(true, 'Generando archivo M3U...');
+            let m3uContent = '#EXTM3U\n';
+            let currentSavedGroup = null;
+
+             const sortedChannels = [...channels].sort((a, b) => {
+                 const groupA = a['group-title'] || '';
+                 const groupB = b['group-title'] || '';
+                 const indexA = groupOrder.indexOf(groupA);
+                 const indexB = groupOrder.indexOf(groupB);
+                 const effectiveIndexA = indexA === -1 ? Infinity : indexA;
+                 const effectiveIndexB = indexB === -1 ? Infinity : indexB;
+
+                 if (effectiveIndexA !== effectiveIndexB) {
+                    return effectiveIndexA - effectiveIndexB;
+                 }
+                 return a.originalIndex - b.originalIndex;
+            });
+
+            sortedChannels.forEach(channel => {
+                 const channelGroup = channel['group-title'] || '';
+
+                if (channelGroup && channelGroup !== currentSavedGroup) {
+                    m3uContent += `#EXTGRP:${channelGroup}\n`;
+                    currentSavedGroup = channelGroup;
+                } else if (!channelGroup && currentSavedGroup !== '') {
+                     currentSavedGroup = '';
+                }
+
+                let extinfLine = '#EXTINF:-1';
+                const finalAttributes = { ...channel.attributes };
+
+                finalAttributes['tvg-id'] = channel['tvg-id'] || '';
+                finalAttributes['tvg-name'] = channel['tvg-name'] || channel.name || '';
+                finalAttributes['tvg-logo'] = channel['tvg-logo'] || '';
+                finalAttributes['group-title'] = channelGroup;
+
+                if (channel['group-logo']) { finalAttributes['group-logo'] = channel['group-logo']; }
+                else { delete finalAttributes['group-logo']; }
+
+                if (channel['ch-number']) { finalAttributes['ch-number'] = channel['ch-number']; }
+                else { delete finalAttributes['ch-number']; }
+
+
+                 for (const key in finalAttributes) {
+                     if (finalAttributes[key] === '' || finalAttributes[key] === null || finalAttributes[key] === undefined) {
+                        delete finalAttributes[key];
+                    }
+                 }
+
+                 if(channel.favorite) finalAttributes['favorite']='true';
+
+
+                 for (const key in finalAttributes) {
+                     let value = finalAttributes[key];
+                    if (typeof value !== 'string') value = String(value);
+
+                    const needsQuotes = value.includes(' ') || value.includes(',') || value.includes('"');
+                    if (needsQuotes) {
+                        value = `"${value.replace(/"/g, '')}"`;
+                    }
+                    extinfLine += ` ${key}=${value}`;
+                 }
+
+                 m3uContent += `${extinfLine},${channel.name || ''}\n`;
+
+
+                 for (const key in channel.kodiProps) {
+                     if(channel.kodiProps[key]) {
+                         m3uContent += `#KODIPROP:${key}=${channel.kodiProps[key]}\n`;
+                     }
+                 }
+                 for (const key in channel.vlcOptions) {
+                     if(channel.vlcOptions[key]) {
+                        m3uContent += `#EXTVLCOPT:${key}=${channel.vlcOptions[key]}\n`;
+                    }
+                 }
+
+                 m3uContent += `${channel.url || ''}\n`;
+            });
+
+            try {
+                const blob = new Blob([m3uContent], { type: 'application/vnd.apple.mpegurl;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+
+                 const safeFileNameBase = (currentFileName || 'lista_editada.m3u').replace(/\.[^/.]+$/, "");
+                 const extension = (currentFileName || '.m3u').split('.').pop()?.toLowerCase() || 'm3u';
+                 const safeExtension = ['m3u', 'm3u8'].includes(extension) ? extension : 'm3u';
+                 const safeFileName = `${safeFileNameBase}_editada.${safeExtension}`.replace(/[^a-z0-9_.\-]/gi, '_').replace(/_{2,}/g, '_');
+
+                a.download = safeFileName;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Archivo guardado exitosamente como ' + safeFileName, 'success');
+            } catch (error) {
+                showToast('Error al generar o descargar el archivo.', 'error');
+                 console.error("Save error:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+         async function handleNewList() {
+            let doCreateNew = true;
+            if (channels.length > 0) {
+                const userConfirmed = await showConfirmationModal(
+                     '¿Estás seguro de que deseas crear una nueva lista? Todos los cambios no guardados en la lista actual se perderán.',
+                     'Confirmar Nueva Lista',
+                     'Sí, Crear Nueva',
+                     'btn-warning'
+                 );
+                doCreateNew = userConfirmed;
+            }
+
+             if (doCreateNew) {
+                channels = [];
+                groupOrder = [];
+                selectedChannels.clear();
+                currentFileName = '';
+                fileNameDisplay.textContent = 'Nueva Lista Sin Título';
+                comparisonChannels = [];
+                comparisonFileName = '';
+                currentSort = { column: null, direction: 'asc' };
+                currentGroupFilter = '';
+                showOnlyFavorites = false;
+                searchInput.value = '';
+                collapsedGroups.clear();
+
+                renderTable();
+                renderGroups();
+                updateGroupFilter();
+                groupsContainer.style.display = 'none';
+                updateToggleFavoritesButton();
+                clearLocalStorage();
+                showToast('Nueva lista vacía creada.', 'info');
+            }
+        }
+
+        function renderTable() {
+             const searchTerm = searchInput.value.toLowerCase().trim();
+             const fragment = document.createDocumentFragment();
+             let visibleCount = 0;
+
+             const filteredChannels = channels.filter(channel => {
+                if (!channel) return false;
+                if (showOnlyFavorites && !channel.favorite) return false;
+                if (currentGroupFilter && (channel['group-title'] || '') !== currentGroupFilter) return false;
+                if (searchTerm) {
+                     const nameMatch = channel.name?.toLowerCase().includes(searchTerm);
+                     const urlMatch = channel.url?.toLowerCase().includes(searchTerm);
+                     const groupMatch = channel['group-title']?.toLowerCase().includes(searchTerm);
+                     const tvgIdMatch = channel['tvg-id']?.toLowerCase().includes(searchTerm);
+                    if (!nameMatch && !urlMatch && !groupMatch && !tvgIdMatch) return false;
+                }
+                return true;
+            });
+
+
+            const sortedChannels = [...filteredChannels];
+
+            if (currentSort.column) {
+                sortedChannels.sort((a, b) => {
+                    let valA, valB;
+                    if (currentSort.column === 'name' || currentSort.column === 'group-title') {
+                         valA = (a[currentSort.column] || '').toLowerCase();
+                         valB = (b[currentSort.column] || '').toLowerCase();
+                    } else if (currentSort.column === 'originalIndex') {
+                        valA = parseInt(a.originalIndex) || 0;
+                         valB = parseInt(b.originalIndex) || 0;
+                    } else {
+                        valA = a[currentSort.column] || '';
+                        valB = b[currentSort.column] || '';
+                    }
+
+                    let comparison = 0;
+                    if (valA < valB) {
+                        comparison = -1;
+                    } else if (valA > valB) {
+                        comparison = 1;
+                     }
+
+                     return comparison * (currentSort.direction === 'asc' ? 1 : -1);
+                });
+            } else {
+                 sortedChannels.sort((a, b) => {
+                     const groupA = a['group-title'] || '';
+                     const groupB = b['group-title'] || '';
+                     const indexA = groupOrder.indexOf(groupA);
+                     const indexB = groupOrder.indexOf(groupB);
+                     const effectiveIndexA = indexA === -1 ? Infinity : indexA;
+                     const effectiveIndexB = indexB === -1 ? Infinity : indexB;
+
+                    if (effectiveIndexA !== effectiveIndexB) {
+                        return effectiveIndexA - effectiveIndexB;
+                    }
+                     return a.originalIndex - b.originalIndex;
+                });
+             }
+
+
+             const channelsByGroup = sortedChannels.reduce((acc, channel) => {
+                const groupKey = channel['group-title'] || '';
+                if (!acc[groupKey]) acc[groupKey] = [];
+                acc[groupKey].push(channel);
+                return acc;
+            }, {});
+
+            groupOrder.forEach(groupKey => {
+                if (channelsByGroup[groupKey] && channelsByGroup[groupKey].length > 0) {
+                    const groupChannels = channelsByGroup[groupKey];
+                    const isCollapsed = collapsedGroups.has(groupKey);
+                    const groupHeader = createGroupHeaderRow(groupKey, groupChannels.length, isCollapsed);
+                    fragment.appendChild(groupHeader);
+                    groupChannels.forEach((channel) => {
+                        const actualIndex = channels.findIndex(c => c && c.originalIndex === channel.originalIndex);
+                        if (actualIndex !== -1) {
+                             const displayIndex = visibleCount + 1;
+                             const row = createRow(channel, channel.originalIndex, displayIndex, isCollapsed, groupKey);
+                            if (!isCollapsed) {
+                                visibleCount++;
+                            }
+                             fragment.appendChild(row);
+                        }
+                    });
+                 }
+             });
+
+             Object.keys(channelsByGroup).forEach(groupKey => {
+                 if (!groupOrder.includes(groupKey)) {
+                    const groupChannels = channelsByGroup[groupKey];
+                    const isCollapsed = collapsedGroups.has(groupKey);
+                     const groupHeader = createGroupHeaderRow(groupKey, groupChannels.length, isCollapsed);
+                     fragment.appendChild(groupHeader);
+                    groupChannels.forEach((channel) => {
+                         const actualIndex = channels.findIndex(c => c && c.originalIndex === channel.originalIndex);
+                         if (actualIndex !== -1) {
+                            const displayIndex = visibleCount + 1;
+                            const row = createRow(channel, channel.originalIndex, displayIndex, isCollapsed, groupKey);
+                             if (!isCollapsed) {
+                                visibleCount++;
+                            }
+                             fragment.appendChild(row);
+                         }
+                    });
+                 }
+             });
+
+
+             tableBody.innerHTML = '';
+
+             if (channels.length > 0 && fragment.children.length === 0 && !searchTerm && !currentGroupFilter && !showOnlyFavorites && groupOrder.length > 0 && groupOrder.every(g => collapsedGroups.has(g))) {
+                 tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px 20px; color: var(--text-light);">Todos los grupos están colapsados. Expande uno para ver canales.</td></tr>`;
+             } else if (channels.length > 0 && fragment.children.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px 20px; color: var(--text-light);">No se encontraron canales que coincidan con los filtros aplicados.</td></tr>`;
+            } else if (channels.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px 20px; color: var(--text-light);">Carga un archivo M3U o crea una nueva lista para empezar a editar.</td></tr>`;
+            } else {
+                tableBody.appendChild(fragment);
+             }
+
+            channelCountSpan.textContent = channels.length;
+             visibleChannelCountSpan.textContent = tableBody.querySelectorAll('tr.channel-row:not(.hidden)').length;
+            updateSelectAllCheckbox();
+            updateSortIcons();
+         }
+
+         function updateSortIcons() {
+            document.querySelectorAll('#channels-table th.sortable i.fa-sort-up, #channels-table th.sortable i.fa-sort-down').forEach(icon => {
+                icon.className = 'fas fa-sort';
+                icon.style.color = 'var(--text-light)';
+            });
+            if (currentSort.column) {
+                const currentTh = document.querySelector(`#channels-table th[data-sort="${currentSort.column}"]`);
+                if (currentTh) {
+                    const icon = currentTh.querySelector('i');
+                    if(icon) {
+                        icon.className = `fas fa-sort-${currentSort.direction === 'asc' ? 'up' : 'down'}`;
+                         icon.style.color = 'var(--text-dark)';
+                    }
+                }
+             }
+         }
+
+        function createGroupHeaderRow(group, count, isCollapsed) {
+            const headerRow = document.createElement('tr');
+            headerRow.className = `group-header-row ${isCollapsed ? 'collapsed' : ''}`;
+            headerRow.dataset.group = group;
+            const displayName = group === '' ? '(Sin Grupo)' : escapeHtml(group);
+            const toggleIconClass = isCollapsed ? 'fa-chevron-right' : 'fa-chevron-down';
+            headerRow.innerHTML = `<td colspan="8"><span class="group-toggle-icon"><i class="fas ${toggleIconClass}"></i></span> ${displayName} <span class="group-channel-count">(${count})</span></td>`;
+            headerRow.addEventListener('click', () => toggleGroupCollapse(group));
+            return headerRow;
+        }
+
+        function toggleGroupCollapse(group) {
+             const headerRow = tableBody.querySelector(`.group-header-row[data-group="${group}"]`);
+             const channelRows = tableBody.querySelectorAll(`.channel-row[data-group-parent="${group}"]`);
+             const icon = headerRow?.querySelector('.group-toggle-icon i');
+             if (!headerRow || !icon) return;
+
+             if (collapsedGroups.has(group)) {
+                collapsedGroups.delete(group);
+                headerRow.classList.remove('collapsed');
+                icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+                channelRows.forEach(row => row.classList.remove('hidden'));
+            } else {
+                collapsedGroups.add(group);
+                 headerRow.classList.add('collapsed');
+                 icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+                channelRows.forEach(row => row.classList.add('hidden'));
+            }
+             visibleChannelCountSpan.textContent = tableBody.querySelectorAll('tr.channel-row:not(.hidden)').length;
+            updateSelectAllCheckbox();
+            triggerLocalStorageSave();
+         }
+
+        function createRow(channel, originalIndex, displayCount, isGroupCollapsed, parentGroup) {
+             const row = document.createElement('tr');
+             row.dataset.index = originalIndex;
+             row.dataset.groupParent = parentGroup;
+             row.classList.add('channel-row');
+             row.classList.toggle('selected-row', selectedChannels.has(originalIndex));
+             row.classList.toggle('hidden', isGroupCollapsed);
+
+             let statusIcon = 'fa-question-circle';
+             let statusClass = 'status-unknown';
+             let statusText = 'N/D';
+             let statusTitle = 'Estado desconocido';
+
+             if (channel.active === true) {
+                 statusIcon = 'fa-check-circle'; statusClass = 'status-active'; statusText = 'Activo'; statusTitle = 'URL activa validada';
+             } else if (channel.active === false) {
+                statusIcon = 'fa-times-circle'; statusClass = 'status-inactive'; statusText = 'Inactivo'; statusTitle = 'URL inactiva o inválida';
+             } else if (channel.active === 'checking') {
+                statusIcon = 'fa-spinner fa-spin'; statusClass = 'status-checking'; statusText = 'Check...'; statusTitle = 'Comprobando URL...';
+             }
+
+            const logoHtml = channel['tvg-logo']
+                ? `<img src="${escapeHtml(channel['tvg-logo'])}" class="logo-preview" onerror="handleImageError(this)">`
+                : `<span>-</span>`;
+
+            const nameHtml = `${channel.favorite ? '<i class="fas fa-star favorite-icon" title="Favorito"></i> ' : ''}${escapeHtml(channel.name || '')}`;
+
+            const groupDisplayName = channel['group-title'] === '' ? '(Sin Grupo)' : escapeHtml(channel['group-title'] || '(Sin Grupo)');
+            const groupTitleAttr = `Grupo: ${groupDisplayName}. Haz clic en el icono para cambiar.`;
+             const channelArrayIndex = channels.findIndex(ch => ch.originalIndex === originalIndex);
+
+            row.innerHTML = `
+                <td class="checkbox-cell"><input type="checkbox" class="row-checkbox" data-index="${originalIndex}" ${selectedChannels.has(originalIndex) ? 'checked' : ''}></td>
+                <td class="index-cell"><i class="fas fa-grip-lines drag-handle" title="Arrastrar para reordenar"></i> ${displayCount}</td>
+                 <td class="logo-cell">${logoHtml}</td>
+                 <td class="name-cell" title="${escapeHtml(channel.name || '')}">${nameHtml}</td>
+                <td class="url-cell" title="${escapeHtml(channel.url || '')}">${escapeHtml(channel.url || '')}</td>
+                 <td class="group-cell" title="${groupTitleAttr}">
+                    <span class="group-cell-text">${groupDisplayName}</span>
+                    <i class="fas fa-folder-tree action-change-group" title="Cambiar grupo..."></i>
+                </td>
+                <td class="status-cell"><span class="status-badge ${statusClass}" title="${statusTitle}"><i class="fas ${statusIcon}"></i> ${statusText}</span></td>
+                 <td class="actions-cell">
+                    <button class="btn btn-sm btn-outline-primary action-edit" title="Editar Canal"><i class="fas fa-edit"></i></button>
+                     <button class="btn btn-sm ${channel.favorite ? 'btn-warning' : 'btn-outline-warning'} action-fav" title="${channel.favorite ? 'Quitar Favorito' : 'Marcar Favorito'}"><i class="${channel.favorite ? 'fas fa-star' : 'far fa-star'}"></i></button>
+                    <button class="btn btn-sm btn-outline-danger action-delete" title="Eliminar Canal"><i class="fas fa-trash"></i></button>
+                 </td>`;
+
+             return row;
+         }
+
+
+        function updateSingleRow(originalIndex) {
+            const channel = channels.find(ch => ch && ch.originalIndex === originalIndex);
+            const row = tableBody.querySelector(`tr.channel-row[data-index="${originalIndex}"]`);
+            if (!row || !channel) return;
+
+
+            const displayCountElement = row.querySelector('.index-cell');
+             let displayCount = '?';
+            if(displayCountElement) {
+                const textContent = displayCountElement.textContent || '';
+                const match = textContent.match(/(\d+)$/);
+                 displayCount = match ? match[1] : '?';
+             }
+
+
+            const parentGroup = row.dataset.groupParent || '';
+             const isGroupCollapsed = collapsedGroups.has(parentGroup);
+
+            const newRow = createRow(channel, originalIndex, displayCount, isGroupCollapsed, parentGroup);
+            row.replaceWith(newRow);
+        }
+
+
+        function updateGroupOrder() {
+             const currentGroups = [...new Set(channels.map(ch => ch['group-title'] || ''))];
+            const newGroupOrder = [];
+            groupOrder.forEach(group => {
+                if (currentGroups.includes(group)) newGroupOrder.push(group);
+            });
+            currentGroups.forEach(group => {
+                 if (!newGroupOrder.includes(group)) newGroupOrder.push(group);
+            });
+            groupOrder = newGroupOrder;
+         }
+
+
+        function updateGroupOrderIfNeeded(oldGroup, newGroup) {
+             let orderChanged = false;
+
+             if (newGroup !== null && newGroup !== undefined && !groupOrder.includes(newGroup)) {
+                if (newGroup === '' || (newGroup && channels.some(ch => (ch['group-title'] || '') === newGroup))) {
+                    groupOrder.push(newGroup);
+                     orderChanged = true;
+                }
+             }
+
+
+            if (oldGroup !== null && oldGroup !== undefined && oldGroup !== newGroup) {
+                const isOldGroupStillUsed = channels.some(ch => (ch['group-title'] || '') === oldGroup);
+                if (!isOldGroupStillUsed && groupOrder.includes(oldGroup)) {
+                     groupOrder = groupOrder.filter(g => g !== oldGroup);
+                    orderChanged = true;
+                 }
+            }
+
+            if (orderChanged) {
+                updateGroupFilter();
+                if (groupsContainer.style.display === 'block') {
+                    renderGroups();
+                 }
+             }
+         }
+
+
+        function updateGroupOrderAfterRename(oldGroup, newGroup) {
+            const index = groupOrder.indexOf(oldGroup);
+            if (index !== -1) {
+                if (groupOrder.includes(newGroup) && newGroup !== oldGroup) {
+                     groupOrder.splice(index, 1);
+                 } else if (!groupOrder.includes(newGroup)) {
+                     groupOrder[index] = newGroup;
+                 }
+            } else if (newGroup !== undefined && newGroup !== null && !groupOrder.includes(newGroup)) {
+                 groupOrder.push(newGroup);
+            }
+             groupOrder = groupOrder.filter((value, idx, self) => self.indexOf(value) === idx);
+         }
+
+        function renderGroups() {
+             groupsList.innerHTML = '';
+             if (groupOrder.length === 0) {
+                groupsList.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No hay grupos definidos en la lista actual.</p>';
+                 return;
+             }
+
+             const groupFragment = document.createDocumentFragment();
+            groupOrder.forEach(group => {
+                const groupItem = document.createElement('div');
+                 groupItem.className = 'group-item';
+                 groupItem.dataset.group = group;
+                const groupDisplayName = group === '' ? '(Sin Grupo)' : escapeHtml(group);
+
+                 const firstChannelInGroup = channels.find(ch => (ch['group-title'] || '') === group);
+                const groupLogo = firstChannelInGroup?.['group-logo'];
+
+                const editButtonHtml = group !== ''
+                    ? `<button class="btn btn-sm btn-outline-secondary edit-group-details" data-group="${escapeHtml(group)}" title="Editar detalles del grupo ${groupDisplayName}"><i class="fas fa-pencil-alt"></i></button>`
+                    : '';
+
+                 groupItem.innerHTML = `
+                     <i class="fas fa-grip-lines group-drag-handle" title="Arrastrar para reordenar"></i>
+                     <span>${groupDisplayName}</span>
+                    ${groupLogo ? `<img src="${escapeHtml(groupLogo)}" class="logo-preview" onerror="handleImageError(this)">` : ''}
+                     ${editButtonHtml}
+                 `;
+                 groupFragment.appendChild(groupItem);
+            });
+
+             groupsList.appendChild(groupFragment);
+             initGroupSortable();
+        }
+
+        function toggleGroupsContainer() {
+            const willShow = groupsContainer.style.display === 'none';
+            groupsContainer.style.display = willShow ? 'block' : 'none';
+            if (willShow) {
+                updateGroupOrder();
+                renderGroups();
+             }
+         }
+
+        function handleGroupListClick(e) {
+            const editButton = e.target.closest('.edit-group-details');
+            if (editButton) {
+                const groupName = editButton.dataset.group;
+                if (groupName !== undefined) {
+                     openGroupEditModal(groupName);
+                }
+            }
+        }
+
+        function updateGroupFilter() {
+             const currentFilterValue = groupFilterSelect.value;
+             groupFilterSelect.innerHTML = '<option value="">-- Todos los Grupos --</option>';
+
+            groupOrder.forEach(group => {
+                const displayName = group === '' ? '(Sin Grupo)' : escapeHtml(group);
+                const value = group;
+                groupFilterSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(value)}">${displayName}</option>`);
+             });
+
+
+            if (groupOrder.includes(currentFilterValue) || currentFilterValue === '') {
+                 groupFilterSelect.value = currentFilterValue;
+            } else {
+                groupFilterSelect.value = '';
+                currentGroupFilter = '';
+            }
+         }
+
+        function handleSelectAll(e) {
+             const isChecked = e.target.checked;
+            tableBody.querySelectorAll('tr.channel-row:not(.hidden)').forEach(row => {
+                 const index = parseInt(row.dataset.index);
+                 if (isNaN(index)) return;
+                 const checkbox = row.querySelector('.row-checkbox');
+                 if (!checkbox) return;
+
+                if (isChecked) selectedChannels.add(index);
+                else selectedChannels.delete(index);
+
+                checkbox.checked = isChecked;
+                row.classList.toggle('selected-row', isChecked);
+             });
+            updateSelectAllCheckbox();
+         }
+
+        function handleRowCheckboxChange(e) {
+             if (!e.target.classList.contains('row-checkbox')) return;
+            const checkbox = e.target;
+             const row = checkbox.closest('tr');
+            const index = parseInt(checkbox.dataset.index);
+
+            if (isNaN(index) || !row.classList.contains('channel-row')) return;
+
+            if (checkbox.checked) {
+                selectedChannels.add(index);
+             } else {
+                 selectedChannels.delete(index);
+             }
+             row.classList.toggle('selected-row', checkbox.checked);
+            updateSelectAllCheckbox();
+         }
+
+        function updateSelectAllCheckbox() {
+             const visibleCheckboxes = Array.from(tableBody.querySelectorAll('tr.channel-row:not(.hidden) .row-checkbox'));
+             const numVisible = visibleCheckboxes.length;
+
+             if (numVisible === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+                 return;
+             }
+
+             let numSelectedVisible = 0;
+             visibleCheckboxes.forEach(cb => {
+                const index = parseInt(cb.dataset.index);
+                 if (!isNaN(index) && selectedChannels.has(index)) {
+                     numSelectedVisible++;
+                }
+             });
+
+            if (numSelectedVisible === numVisible) {
+                selectAllCheckbox.checked = true;
+                 selectAllCheckbox.indeterminate = false;
+            } else if (numSelectedVisible > 0) {
+                 selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+             } else {
+                selectAllCheckbox.checked = false;
+                 selectAllCheckbox.indeterminate = false;
+             }
+         }
+
+        function clearSelection() {
+             selectedChannels.clear();
+             tableBody.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+             tableBody.querySelectorAll('.selected-row').forEach(row => row.classList.remove('selected-row'));
+             updateSelectAllCheckbox();
+             showToast('Selección de canales limpiada.', 'info', 1500);
+         }
+
+
+        function handleSort(column) {
+             if (!column) return;
+
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+             } else {
+                currentSort.column = column;
+                 currentSort.direction = 'asc';
+            }
+             renderTable();
+             triggerLocalStorageSave();
+         }
+
+
+        function handleContextMenu(e) {
+             const row = e.target.closest('tr.channel-row');
+             if (!row || row.dataset.index === undefined) return;
+
+             e.preventDefault();
+             const index = parseInt(row.dataset.index);
+            if(isNaN(index) || !channels.find(ch => ch.originalIndex === index)) return;
+
+            const channel = channels.find(ch => ch.originalIndex === index);
+             if(!channel) return;
+            const favItem = contextMenu.querySelector('[data-action="toggle-favorite"]');
+             favItem.innerHTML = `<i class="${channel.favorite ? 'fas fa-star favorite-icon' : 'far fa-star'} fa-fw"></i> ${channel.favorite ? 'Quitar de Favoritos' : 'Marcar como Favorito'}`;
+
+
+             contextMenu.style.display = 'block';
+             const { clientX: mouseX, clientY: mouseY } = e;
+             const { innerWidth, innerHeight } = window;
+            const { offsetWidth: menuWidth, offsetHeight: menuHeight } = contextMenu;
+
+            let top = mouseY;
+             let left = mouseX;
+
+             if (left + menuWidth > innerWidth) left = innerWidth - menuWidth - 5;
+             if (top + menuHeight > innerHeight) top = innerHeight - menuHeight - 5;
+
+            left = Math.max(0, left);
+             top = Math.max(0, top);
+
+             contextMenu.style.left = `${left}px`;
+             contextMenu.style.top = `${top}px`;
+             contextMenu.dataset.index = index;
+         }
+
+        function handleContextMenuAction(e) {
+             e.stopPropagation();
+             const actionItem = e.target.closest('.context-menu-item');
+            if (!actionItem) return;
+
+             const action = actionItem.dataset.action;
+             const indexStr = contextMenu.dataset.index;
+             const originalIndex = indexStr !== undefined ? parseInt(indexStr) : NaN;
+
+             if(isNaN(originalIndex) || !channels.find(ch => ch.originalIndex === originalIndex)) {
+                contextMenu.style.display = 'none';
+                return;
+             }
+            const actualIndex = channels.findIndex(ch => ch.originalIndex === originalIndex);
+             if(actualIndex === -1) {
+                contextMenu.style.display = 'none';
+                return;
+            }
+
+            contextMenu.style.display = 'none';
+
+            switch (action) {
+                case 'edit': openChannelModal(actualIndex); break;
+                 case 'toggle-favorite': toggleFavorite(originalIndex); break;
+                case 'delete': deleteChannel(originalIndex); break;
+                case 'change-group': openGroupChangeModal(actualIndex); break;
+                 case 'validate': validateSingleUrl(originalIndex); break;
+                case 'copy-url':
+                     const channelToCopy = channels[actualIndex];
+                    if(channelToCopy && channelToCopy.url) {
+                        copyToClipboard(channelToCopy.url, 'URL del canal copiada.');
+                    } else {
+                        showToast('Este canal no tiene una URL para copiar.', 'warning');
+                     }
+                     break;
+            }
+        }
+
+        function handleTableClick(e) {
+            const button = e.target.closest('button');
+            const icon = e.target.closest('i.action-change-group');
+            const row = e.target.closest('tr.channel-row');
+            if (!row || row.dataset.index === undefined) return;
+
+            const originalIndex = parseInt(row.dataset.index);
+             if (isNaN(originalIndex) || !channels.find(ch => ch.originalIndex === originalIndex)) return;
+
+            const actualIndex = channels.findIndex(ch => ch.originalIndex === originalIndex);
+            if(actualIndex === -1) return;
+
+
+            if (button) {
+                if (button.classList.contains('action-edit')) {
+                    openChannelModal(actualIndex);
+                 } else if (button.classList.contains('action-fav')) {
+                    toggleFavorite(originalIndex);
+                } else if (button.classList.contains('action-delete')) {
+                     deleteChannel(originalIndex);
+                }
+             } else if (icon && icon.classList.contains('action-change-group')) {
+                 openGroupChangeModal(actualIndex);
+            }
+        }
+
+
+        function toggleFavorite(originalIndex) {
+             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+             if (channelIndex === -1) return;
+
+            channels[channelIndex].favorite = !channels[channelIndex].favorite;
+
+             updateSingleRow(originalIndex);
+             triggerLocalStorageSave();
+
+             if (showOnlyFavorites && !channels[channelIndex].favorite) {
+                renderTable();
+             }
+             showToast(channels[channelIndex].favorite ? 'Canal marcado como favorito.' : 'Canal quitado de favoritos.', 'info', 1500);
+         }
+
+        function updateToggleFavoritesButton() {
+             const icon = toggleFavoritesBtn.querySelector('i');
+             if (showOnlyFavorites) {
+                 toggleFavoritesBtn.innerHTML = `<i class="fas fa-star favorite-icon"></i> Ver Todos`;
+                 toggleFavoritesBtn.classList.replace('btn-outline-warning', 'btn-warning');
+                 toggleFavoritesBtn.title = 'Mostrar todos los canales';
+                 toggleFavoritesBtn.setAttribute('aria-pressed', 'true');
+             } else {
+                toggleFavoritesBtn.innerHTML = `<i class="far fa-star"></i> Ver Favoritos`;
+                toggleFavoritesBtn.classList.replace('btn-warning', 'btn-outline-warning');
+                 toggleFavoritesBtn.title = 'Mostrar solo canales favoritos';
+                 toggleFavoritesBtn.setAttribute('aria-pressed', 'false');
+            }
+         }
+
+
+        function toggleFavoritesFilter() {
+             showOnlyFavorites = !showOnlyFavorites;
+             updateToggleFavoritesButton();
+            renderTable();
+             triggerLocalStorageSave();
+        }
+
+
+        async function deleteChannel(originalIndex) {
+             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+             if (channelIndex === -1) return;
+
+             const channelName = channels[channelIndex].name || `Canal #${originalIndex + 1}`;
+             const userConfirmed = await showConfirmationModal(
+                 `¿Estás seguro de que deseas eliminar el canal "<strong>${escapeHtml(channelName)}</strong>"?`,
+                 'Confirmar Eliminación',
+                 'Sí, Eliminar',
+                 'btn-danger'
+             );
+
+             if (userConfirmed) {
+                 const deletedGroup = channels[channelIndex]['group-title'] || '';
+                 channels.splice(channelIndex, 1);
+
+
+                 const deletedOriginalIndex = originalIndex;
+                selectedChannels.delete(deletedOriginalIndex);
+
+                 channels.forEach((ch, idx) => ch.originalIndex = idx);
+
+
+                 updateGroupOrderIfNeeded(deletedGroup, null);
+                 renderTable();
+                triggerLocalStorageSave();
+                 showToast(`Canal "${escapeHtml(channelName)}" eliminado.`, 'info');
+             }
+        }
+
+
+         async function deleteSelectedChannels() {
+             if (selectedChannels.size === 0) {
+                 showToast('No hay canales seleccionados para eliminar.', 'warning');
+                 return;
+             }
+
+             const userConfirmed = await showConfirmationModal(
+                `¿Estás seguro de que deseas eliminar los ${selectedChannels.size} canales seleccionados? Esta acción no se puede deshacer.`,
+                'Confirmar Eliminación Múltiple',
+                `Eliminar ${selectedChannels.size} Canales`,
+                 'btn-danger'
+             );
+
+             if (userConfirmed) {
+                const count = selectedChannels.size;
+                let affectedGroups = new Set();
+                const originalIndicesToDelete = Array.from(selectedChannels).sort((a, b) => b - a);
+
+
+                 originalIndicesToDelete.forEach(originalIndex => {
+                     const indexToDelete = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+                     if (indexToDelete !== -1) {
+                         affectedGroups.add(channels[indexToDelete]['group-title'] || '');
+                         channels.splice(indexToDelete, 1);
+                     }
+                 });
+
+                selectedChannels.clear();
+                channels.forEach((ch, idx) => ch.originalIndex = idx);
+
+
+                 affectedGroups.forEach(group => updateGroupOrderIfNeeded(group, null));
+                 renderTable();
+                updateGroupFilter();
+                 if (groupsContainer.style.display === 'block') renderGroups();
+                 triggerLocalStorageSave();
+                showToast(`${count} canales eliminados correctamente.`, 'info');
+            }
+        }
+
+         async function groupSelectedChannels() {
+             if (selectedChannels.size === 0) {
+                 showToast('Selecciona primero los canales que deseas agrupar.', 'warning');
+                 return;
+             }
+
+             const newGroup = prompt(`Introduce el nombre del grupo para los ${selectedChannels.size} canales seleccionados (deja vacío para quitar grupo):`);
+
+             if (newGroup !== null) {
+                 const groupName = newGroup.trim();
+                let affectedGroups = new Set();
+                 let changedCount = 0;
+
+                selectedChannels.forEach(originalIndex => {
+                     const index = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+                     if (index !== -1) {
+                         const oldGroup = channels[index]['group-title'] || '';
+                         if (oldGroup !== groupName) {
+                             affectedGroups.add(oldGroup);
+                            channels[index]['group-title'] = groupName;
+                             channels[index].attributes = channels[index].attributes || {};
+                             channels[index].attributes['group-title'] = groupName;
+                             changedCount++;
+                         }
+                     }
+                });
+
+                if (changedCount > 0) {
+                    updateGroupOrderIfNeeded(null, groupName);
+                    affectedGroups.forEach(oldGroup => {
+                        if(oldGroup !== groupName) {
+                            updateGroupOrderIfNeeded(oldGroup, null);
+                        }
+                    });
+                    renderTable();
+                     updateGroupFilter();
+                     if (groupsContainer.style.display === 'block') renderGroups();
+                    triggerLocalStorageSave();
+                     showToast(`Grupo "${groupName === '' ? '(Sin Grupo)' : escapeHtml(groupName)}" asignado a ${changedCount} canales.`, 'success');
+                } else {
+                    showToast('No se realizaron cambios, los canales seleccionados ya pertenecían a ese grupo.', 'info');
+                }
+             }
+         }
+
+
+         async function validateSingleUrl(originalIndex, updateRow = true) {
+             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+            if (channelIndex === -1) return false;
+
+            const channel = channels[channelIndex];
+            const url = channel.url;
+
+
+            if (!url || !(url.startsWith('http:') || url.startsWith('https:'))) {
+                channel.active = false;
+                if (updateRow) updateSingleRow(originalIndex);
+                return false;
+            }
+
+
+            channel.active = 'checking';
+            if (updateRow) updateSingleRow(originalIndex);
+
+             let isActive = false;
+             try {
+                 const response = await fetch(url, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
+                 isActive = true;
+             } catch (error) {
+                isActive = false;
+             } finally {
+                 channel.active = isActive;
+                 if (updateRow) updateSingleRow(originalIndex);
+             }
+            return channel.active === true;
+         }
+
+        async function validateAllUrls() {
+             if (validationInProgress) {
+                 showToast('Ya hay una validación de URLs en progreso.', 'warning');
+                 return;
+             }
+             if (channels.length === 0) {
+                 showToast('No hay canales en la lista para validar.', 'info');
+                return;
+            }
+
+            validationInProgress = true;
+             setLoading(true, 'Validando URLs (0%)...');
+             showToast(`Iniciando validación de ${channels.length} URLs... Esto puede tardar.`, 'info', 5000);
+
+             let processedCount = 0;
+             let validCount = 0;
+             let invalidCount = 0;
+            const totalChannels = channels.length;
+            const chunkSize = 10;
+             let lastRenderTime = Date.now();
+
+             for (let i = 0; i < totalChannels; i += chunkSize) {
+                const chunkPromises = [];
+                 for (let j = 0; j < chunkSize && i + j < totalChannels; j++) {
+                    const currentChannel = channels[i+j];
+                     if (currentChannel && currentChannel.originalIndex !== undefined) {
+                         const originalIndex = currentChannel.originalIndex;
+                        chunkPromises.push(
+                             validateSingleUrl(originalIndex, false)
+                                .catch((error) => {
+                                    const failedChannelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+                                     if(failedChannelIndex !== -1) {
+                                         channels[failedChannelIndex].active = false;
+                                     }
+                                     console.warn(`Error validating index ${originalIndex}:`, error)
+                                    return false;
+                                })
+                         );
+                    }
+                }
+
+                await Promise.allSettled(chunkPromises);
+
+                processedCount = Math.min(i + chunkSize, totalChannels);
+                 const percentage = Math.round((processedCount / totalChannels) * 100);
+
+
+                if (Date.now() - lastRenderTime > 500 || percentage === 100) {
+                    setLoading(true, `Validando URLs (${percentage}%)... ${processedCount}/${totalChannels}`);
+                    renderTable();
+                    lastRenderTime = Date.now();
+                }
+
+             }
+
+
+            validCount = channels.filter(ch => ch && ch.active === true).length;
+            invalidCount = channels.filter(ch => ch && ch.active === false).length;
+
+            setLoading(false);
+            validationInProgress = false;
+             showToast(`Validación completa. URLs Activas: ${validCount}, Inactivas/No HTTP(S): ${invalidCount}.`, 'success');
+             renderTable();
+            triggerLocalStorageSave();
+         }
+
+        function findAndShowDuplicatesModal() {
+            if (channels.length < 2) {
+                 showToast('Se necesitan al menos 2 canales en la lista para buscar duplicados.', 'info');
+                return;
+            }
+             setLoading(true, 'Buscando canales con URL duplicada...');
+
+            const urlMap = new Map();
+            channels.forEach((channel) => {
+                if (!channel || !channel.url) return;
+                const url = channel.url;
+                if (!urlMap.has(url)) urlMap.set(url, []);
+                urlMap.get(url).push(channel.originalIndex);
+            });
+
+            const duplicatesFound = [];
+            urlMap.forEach((indices, url) => {
+                 if (indices.length > 1) {
+                     duplicatesFound.push({ url, indices });
+                 }
+             });
+
+            duplicatesListDiv.innerHTML = '';
+
+            if (duplicatesFound.length === 0) {
+                 setLoading(false);
+                 showToast('¡Buenas noticias! No se encontraron URLs duplicadas exactas en la lista.', 'success');
+                 return;
+             }
+
+            duplicatesFound.sort((a, b) => b.indices.length - a.indices.length);
+
+            duplicatesFound.forEach(({ url, indices }) => {
+                const setDiv = document.createElement('div');
+                 setDiv.className = 'duplicate-set';
+                 setDiv.dataset.url = url;
+
+                 const urlP = document.createElement('p');
+                 urlP.innerHTML = `<strong>URL Duplicada:</strong> <code>${escapeHtml(url)}</code> (${indices.length} canales)`;
+                 setDiv.appendChild(urlP);
+
+                const listUl = document.createElement('ul');
+                 indices.forEach(originalIndex => {
+                     const channel = channels.find(ch => ch && ch.originalIndex === originalIndex);
+                     if(channel) {
+                        const li = document.createElement('li');
+                         li.textContent = `#${channel.originalIndex + 1}: ${escapeHtml(channel.name || 'Sin Nombre')} (${escapeHtml(channel['group-title'] || 'Sin Grupo')})`;
+                        li.dataset.index = originalIndex;
+                         listUl.appendChild(li);
+                    }
+                });
+                 setDiv.appendChild(listUl);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm btn-danger delete-duplicates-for-url';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Eliminar Repetidos (Conservar 1)';
+                deleteBtn.title = `Eliminar todos excepto el primer canal encontrado (#${indices.sort((a, b) => a - b)[0] + 1}) con esta URL`;
+                deleteBtn.dataset.url = url;
+                deleteBtn.dataset.indices = JSON.stringify(indices);
+                setDiv.appendChild(deleteBtn);
+
+                 duplicatesListDiv.appendChild(setDiv);
+            });
+
+             setLoading(false);
+             openDuplicatesModal();
+        }
+
+         async function handleDeleteDuplicatesForUrl(e) {
+             const button = e.target.closest('.delete-duplicates-for-url');
+             if (!button) { return; }
+
+            const url = button.dataset.url;
+             const indicesStr = button.dataset.indices;
+             if (!url || !indicesStr) return;
+
+            let originalIndices;
+             try {
+                originalIndices = JSON.parse(indicesStr);
+            } catch (err) {
+                showToast('Error al procesar los índices de los duplicados.', 'error');
+                return;
+            }
+
+            if (!Array.isArray(originalIndices) || originalIndices.length < 2) return;
+
+
+             originalIndices.sort((a, b) => a - b);
+             const indexToKeep = originalIndices[0];
+             const indicesToDelete = originalIndices.slice(1);
+
+
+            const userConfirmed = await showConfirmationModal(
+                `¿Estás seguro de que deseas eliminar ${indicesToDelete.length} canales duplicados para la URL <br><code>${escapeHtml(url)}</code>?<br> Se conservará el canal #${indexToKeep + 1}.`,
+                'Confirmar Eliminación de Duplicados',
+                'Sí, Eliminar Repetidos',
+                 'btn-danger'
+             );
+
+
+             if (userConfirmed) {
+                let deletedCount = 0;
+                const highToLowIndices = indicesToDelete.sort((a, b) => b - a);
+
+
+                highToLowIndices.forEach(originalIndexToDelete => {
+                    const currentIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndexToDelete);
+                    if (currentIndex !== -1) {
+                        channels.splice(currentIndex, 1);
+                        deletedCount++;
+                        selectedChannels.delete(originalIndexToDelete);
+                    }
+                });
+
+
+                 if (deletedCount > 0) {
+                    channels.forEach((ch, idx) => ch.originalIndex = idx);
+
+
+                    const updatedSelection = new Set();
+                    selectedChannels.forEach(selOriginalIdx => {
+                        if(channels.some(ch => ch && ch.originalIndex === selOriginalIdx)){
+                             updatedSelection.add(selOriginalIdx);
+                        }
+                     });
+                    selectedChannels = updatedSelection;
+
+
+                     updateSelectAllCheckbox();
+                     showToast(`${deletedCount} canales duplicados eliminados para la URL indicada.`, 'success');
+                     button.closest('.duplicate-set').remove();
+                     duplicatesModified = true;
+                    triggerLocalStorageSave();
+
+                     if (duplicatesListDiv.children.length === 0) {
+                         showToast('Todos los grupos de duplicados han sido gestionados.', 'info');
+                        closeDuplicatesModal();
+                    }
+                 } else {
+                     showToast('No se encontraron o eliminaron canales duplicados para esta URL (posiblemente ya eliminados).', 'warning');
+                     button.closest('.duplicate-set').remove();
+                 }
+             }
+         }
+
+        function compareLists() {
+            setLoading(true, 'Comparando listas...');
+             const listAName = currentFileName || 'Lista Actual';
+            const listBName = comparisonFileName || 'Lista de Comparación';
+
+            document.getElementById('compare-list-a-name').textContent = listAName;
+             document.getElementById('compare-list-b-name').textContent = listBName;
+            document.querySelectorAll('.compare-list-a-name-dynamic').forEach(el => el.textContent = listAName);
+             document.querySelectorAll('.compare-list-b-name-dynamic').forEach(el => el.textContent = listBName);
+
+             const mapA = new Map();
+             channels.forEach((ch, index) => { if (ch && ch.url) mapA.set(ch.url, {...ch, listIndex: ch.originalIndex}); });
+
+            const mapB = new Map();
+             comparisonChannels.forEach((ch, index) => { if (ch && ch.url) mapB.set(ch.url, {...ch, listIndex: ch.originalIndex}); });
+
+            const onlyInA = [];
+            const onlyInB = [];
+            const common = [];
+
+            mapA.forEach((channelA, url) => {
+                 if (mapB.has(url)) {
+                    const channelB = mapB.get(url);
+                    common.push({ channelA, channelB });
+                    mapB.delete(url);
+                 } else {
+                    onlyInA.push(channelA);
+                }
+            });
+
+            mapB.forEach((channelB, url) => {
+                onlyInB.push(channelB);
+            });
+
+             renderComparisonResults(onlyInA, common, onlyInB);
+            openCompareModal();
+            setLoading(false);
+         }
+
+
+        function renderComparisonResults(onlyInA, common, onlyInB) {
+             const listAEl = document.getElementById('compare-list-a');
+             const commonEl = document.getElementById('compare-list-common');
+             const listBEl = document.getElementById('compare-list-b');
+            listAEl.innerHTML = ''; commonEl.innerHTML = ''; listBEl.innerHTML = '';
+
+            document.getElementById('count-only-a').textContent = onlyInA.length;
+            document.getElementById('count-common').textContent = common.length;
+             document.getElementById('count-only-b').textContent = onlyInB.length;
+
+
+             onlyInA.forEach(ch => {
+                const li = document.createElement('li');
+                li.textContent = `#${ch.listIndex + 1}: ${escapeHtml(ch.name || '')} (${escapeHtml(ch['group-title'] || 'S/G')})`;
+                li.title = `URL: ${escapeHtml(ch.url)}`;
+                listAEl.appendChild(li);
+            });
+
+            common.forEach(pair => {
+                 const li = document.createElement('li');
+                 let content = '';
+                const nameA = pair.channelA.name || ''; const nameB = pair.channelB.name || '';
+                 const groupA = pair.channelA['group-title'] || ''; const groupB = pair.channelB['group-title'] || '';
+
+                 let nameDisplay = escapeHtml(nameA);
+                 let groupDisplay = escapeHtml(groupA || '(S/G)');
+
+                let differences = [];
+                 if (nameA !== nameB) {
+                    nameDisplay = `<span class="compare-diff" title="Nombre en B: ${escapeHtml(nameB)}">${escapeHtml(nameA)}</span>`;
+                     differences.push("Nombre");
+                 }
+                if (groupA !== groupB) {
+                     groupDisplay = `<span class="compare-diff" title="Grupo en B: ${escapeHtml(groupB || '(S/G)')}">${escapeHtml(groupA || '(S/G)')}</span>`;
+                    differences.push("Grupo");
+                }
+
+                content = `#${pair.channelA.listIndex + 1}: ${nameDisplay} (${groupDisplay})`;
+                li.innerHTML = content;
+
+                let title = `URL: ${escapeHtml(pair.channelA.url)}`;
+                if(differences.length > 0) {
+                     title += ` | Diferencias en: ${differences.join(', ')}`;
+                } else {
+                    title += ` | Sin diferencias detectadas`;
+                }
+                li.title = title;
+
+                 commonEl.appendChild(li);
+             });
+
+            onlyInB.forEach(ch => {
+                 const li = document.createElement('li');
+                li.textContent = `${escapeHtml(ch.name || '')} (${escapeHtml(ch['group-title'] || 'S/G')})`;
+                li.title = `URL: ${escapeHtml(ch.url)}`;
+                try {
+                    const dataToStore = {...ch};
+                    delete dataToStore.active;
+                     delete dataToStore.listIndex;
+                     li.dataset.channelData = JSON.stringify(dataToStore);
+                } catch(e) {
+                    console.error("Error stringifying channel data for comparison list B", e);
+                 }
+                listBEl.appendChild(li);
+            });
+
+             document.getElementById('copy-missing-to-a-btn').disabled = onlyInB.length === 0;
+             document.getElementById('merge-lists-btn').disabled = onlyInB.length === 0 && onlyInA.length === 0;
+        }
+
+
+         function copyMissingChannelsToA() {
+             const channelsToAdd = [];
+            const existingUrls = new Set(channels.map(ch => ch.url));
+
+             document.querySelectorAll('#compare-list-b li').forEach(li => {
+                 if (li.dataset.channelData) {
+                     try {
+                        const channelData = JSON.parse(li.dataset.channelData);
+                        if (channelData.url && !existingUrls.has(channelData.url)) {
+                             const newChannel = {
+                                ...channelData,
+                                active: null,
+                                originalIndex: -1
+                            };
+                            channelsToAdd.push(newChannel);
+                             existingUrls.add(channelData.url);
+                        }
+                    } catch (e) {
+                        console.error("Error parsing channel data from comparison list", e);
+                    }
+                 }
+             });
+
+            if (channelsToAdd.length > 0) {
+                 channels.push(...channelsToAdd);
+                channels.forEach((ch, idx) => ch.originalIndex = idx);
+                 showToast(`Se añadieron ${channelsToAdd.length} canales nuevos desde ${comparisonFileName || 'la lista B'}.`, 'success');
+                 updateGroupOrder();
+                renderTable();
+                 updateGroupFilter();
+                if (groupsContainer.style.display === 'block') renderGroups();
+                closeCompareModal();
+                triggerLocalStorageSave();
+            } else {
+                showToast('No se encontraron canales nuevos en la lista B que no existieran ya en la lista A (por URL).', 'info');
+            }
+         }
+
+
+         async function mergeLists() {
+            if (!comparisonChannels || comparisonChannels.length === 0) {
+                showToast('No hay datos de la segunda lista cargados para fusionar.', 'warning');
+                return;
+            }
+
+             const channelsToAdd = [];
+            const existingUrls = new Set(channels.map(ch => ch.url));
+
+             comparisonChannels.forEach(channelB => {
+                if (channelB && channelB.url && !existingUrls.has(channelB.url)) {
+                    const newChannel = {
+                        ...channelB,
+                         active: null,
+                        originalIndex: -1
+                     };
+                    channelsToAdd.push(newChannel);
+                     existingUrls.add(channelB.url);
+                }
+             });
+
+             if (channelsToAdd.length === 0) {
+                showToast('No se encontraron canales nuevos en la lista de comparación para añadir.', 'info');
+                 closeCompareModal();
+                return;
+            }
+
+
+            const userConfirmed = await showConfirmationModal(
+                `Se encontraron ${channelsToAdd.length} canales en la lista de comparación que no existen (por URL) en la lista actual. ¿Deseas añadirlos al final de la lista actual?`,
+                'Confirmar Fusión',
+                 `Añadir ${channelsToAdd.length} Canales`,
+                'btn-success'
+            );
+
+
+            if (userConfirmed) {
+                 setLoading(true, 'Fusionando listas...');
+                channels.push(...channelsToAdd);
+                 channels.forEach((ch, idx) => ch.originalIndex = idx);
+                updateGroupOrder();
+                renderTable();
+                updateGroupFilter();
+                if (groupsContainer.style.display === 'block') renderGroups();
+                triggerLocalStorageSave();
+                showToast(`Fusión completada: Se añadieron ${channelsToAdd.length} canales nuevos.`, 'success');
+                 closeCompareModal();
+                setLoading(false);
+             }
+        }
+
+        function saveToLocalStorage() {
+            if (validationInProgress || loadingOverlay.style.display === 'flex') {
+                return;
+            }
+            try {
+                const stateToSave = {
+                    channels: channels,
+                    groupOrder: groupOrder,
+                    collapsedGroups: Array.from(collapsedGroups),
+                    currentFileName: currentFileName,
+                    currentSort: currentSort,
+                    currentGroupFilter: currentGroupFilter,
+                    showOnlyFavorites: showOnlyFavorites,
+                    timestamp: Date.now()
+                };
+                const serializedState = JSON.stringify(stateToSave);
+                localStorage.setItem(LOCAL_STORAGE_KEY, serializedState);
+
+            } catch (error) {
+                 if (error.name === 'QuotaExceededError') {
+                     showToast('Error: No se pudo guardar la sesión, almacenamiento local lleno.', 'error', 5000);
+                     clearLocalStorage();
+                 } else {
+                     showToast('Error inesperado al intentar guardar la sesión.', 'error');
+                    console.error("Local Storage save error:", error);
+                     clearLocalStorage();
+                 }
+            }
+        }
+
+
+        async function loadFromLocalStorage() {
+            const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (!savedState) return;
+
+            try {
+                const parsedState = JSON.parse(savedState);
+                const savedDate = new Date(parsedState.timestamp || 0);
+                 if (!parsedState.channels || !Array.isArray(parsedState.channels)) {
+                     clearLocalStorage();
+                     return;
+                 }
+
+
+                 const userConfirmed = await showConfirmationModal(
+                     `Se encontró una sesión de edición guardada anteriormente (${savedDate.toLocaleString()}).<br>¿Deseas restaurarla?`,
+                     'Restaurar Sesión Anterior',
+                     'Sí, Restaurar',
+                    'btn-success'
+                 );
+
+
+                 if (userConfirmed) {
+                    setLoading(true, 'Restaurando sesión anterior...');
+
+                     channels = parsedState.channels || [];
+                    channels.forEach((ch, idx) => {
+                         ch.originalIndex = ch.originalIndex ?? idx;
+                        ch.active = null;
+                        ch.favorite = ch.favorite || false;
+                         ch.attributes = ch.attributes || {};
+                         ch.kodiProps = ch.kodiProps || {};
+                         ch.vlcOptions = ch.vlcOptions || {};
+                    });
+
+                    groupOrder = parsedState.groupOrder || [];
+                     collapsedGroups = new Set(parsedState.collapsedGroups || []);
+                     currentFileName = parsedState.currentFileName || 'Sesión Restaurada';
+                     fileNameDisplay.textContent = `${escapeHtml(currentFileName)}`;
+                    currentSort = parsedState.currentSort || { column: null, direction: 'asc' };
+                     currentGroupFilter = parsedState.currentGroupFilter || '';
+                     showOnlyFavorites = parsedState.showOnlyFavorites || false;
+                    searchInput.value = '';
+                    groupFilterSelect.value = currentGroupFilter;
+                     updateToggleFavoritesButton();
+
+
+                    updateGroupOrder();
+                    clearSelection();
+                     renderTable();
+                    updateGroupFilter();
+                    if (groupsContainer.style.display === 'block') renderGroups();
+
+                    showToast('Sesión anterior restaurada correctamente.', 'success');
+                    setLoading(false);
+                } else {
+                     clearLocalStorage();
+                     showToast('Sesión anterior no restaurada. Puedes empezar de nuevo o cargar un archivo.', 'info');
+                 }
+            } catch (error) {
+                showToast('Error al intentar restaurar la sesión guardada. Se limpiará el almacenamiento.', 'error');
+                 console.error("Error loading from Local Storage:", error);
+                 clearLocalStorage();
+                setLoading(false);
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initEventListeners();
+            initSortable();
+            initGroupSortable();
+            await loadFromLocalStorage();
+            if(channels.length === 0 && !localStorage.getItem(LOCAL_STORAGE_KEY)) {
+                 renderTable();
+                 updateGroupFilter();
+             }
+        });
+
+    </script>
+</body>
+</html>
