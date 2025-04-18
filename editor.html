@@ -150,27 +150,24 @@
              white-space: nowrap;
              opacity: 0;
              margin-left: 10px;
-             transition: opacity 0.2s linear 0.1s; /* Delay opacity */
+             transition: opacity 0.2s linear 0.1s;
              font-size: 0.9rem;
              font-weight: 500;
-             display: none; /* Initially hidden */
+             display: none;
          }
 
         .sidebar-btn:hover, .sidebar-btn.active {
             background-color: var(--primary-light);
-            /* color: var(--primary); Keep original icon color */
         }
         .sidebar-btn:hover i, .sidebar-btn.active i {
-             /* Slightly enhance icon on hover/active */
             filter: brightness(0.9);
         }
         .sidebar-btn.danger:hover {
              background-color: var(--danger-light);
         }
-        .sidebar-btn.danger i { color: var(--danger); } /* Keep icon red */
+        .sidebar-btn.danger i { color: var(--danger); }
 
 
-        /* Icon Colors */
         #open-btn i { color: var(--primary); }
         #save-btn i { color: var(--success); }
         #new-list-btn i { color: var(--accent-teal); }
@@ -179,7 +176,6 @@
         #validate-urls-btn i { color: var(--accent-indigo); }
         #find-duplicates-btn i { color: var(--warning); }
         #toggle-favorites-btn i { color: var(--accent-pink); }
-        /* Clear stays danger */
 
 
         .sidebar-footer { margin-top: auto; width: 100%; text-align: center; }
@@ -199,8 +195,9 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            /*margin-left: var(--sidebar-collapsed-width); REMOVED - managed by grid now */
+            /* Removed margin-left, flex handles spacing now */
         }
+
 
         .main-header {
             background-color: var(--header-bg);
@@ -278,14 +275,13 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            /* border-right: 1px solid var(--border-color);  Border now applied conditionally by JS/Body Class */
-            border-right: none;
+            border-right: none; /* Changed */
             overflow: hidden;
             transition: width var(--transition-speed) ease;
         }
          body.editor-visible .list-panel {
              width: 60%;
-             border-right: 1px solid var(--border-color);
+             border-right: 1px solid var(--border-color); /* Re-apply border */
          }
 
         .list-toolbar {
@@ -327,7 +323,7 @@
         }
 
         table { min-width: 550px; border-collapse: separate; border-spacing: 0; width: 100%;}
-        th, td { padding: 10px 12px; white-space: nowrap; font-size: 0.85rem; vertical-align: middle; } /* Increased padding */
+        th, td { padding: 10px 12px; white-space: nowrap; font-size: 0.85rem; vertical-align: middle; }
          td { border-bottom: 1px solid var(--border-color); }
         th { background-color: #f8f9fa; font-weight: 600; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #d1d5db; cursor: default;}
          th.sortable { cursor: pointer; }
@@ -386,7 +382,7 @@
              padding-bottom: 10px;
              border-bottom: 1px solid var(--border-color);
              flex-shrink: 0;
-             background-color: var(--light-alt); /* Ensure header matches background */
+             background-color: var(--light-alt);
          }
          .editor-panel-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; }
           .editor-panel-header i { color: var(--primary); margin-right: 8px; }
@@ -397,14 +393,14 @@
             flex-grow: 1;
         }
 
-        .editor-panel .form-group { margin-bottom: 20px; } /* Increased spacing */
+        .editor-panel .form-group { margin-bottom: 20px; }
         .editor-panel label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-dark); }
         .editor-panel input[type="text"],
         .editor-panel input[type="url"],
         .editor-panel input[type="number"],
         .editor-panel textarea {
             width: 100%;
-            height: 38px; /* Slightly taller */
+            height: 38px;
             padding: 0 12px;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
@@ -415,7 +411,7 @@
         }
          .editor-panel textarea {
              height: auto;
-             min-height: 76px; /* ~3 lines */
+             min-height: 76px;
              padding: 8px 12px;
              resize: vertical;
         }
@@ -456,7 +452,7 @@
 
          .editor-group-actions { display: flex; align-items: center; gap: 8px; }
          .editor-group-actions input { flex-grow: 1; }
-         .editor-group-actions .btn { flex-shrink: 0; height: 38px; font-size: 0.8rem; padding: 0 10px;} /* Match input height */
+         .editor-group-actions .btn { flex-shrink: 0; height: 38px; font-size: 0.8rem; padding: 0 10px;}
 
          .editor-panel .form-check-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 8px; }
          .editor-panel .form-check { display: flex; align-items: center; gap: 6px; }
@@ -465,7 +461,7 @@
 
          .editor-panel h6 {
              font-weight: 600;
-             margin: 25px 0 15px 0; /* More margin bottom */
+             margin: 25px 0 15px 0;
              padding-top: 15px;
              border-top: 1px solid var(--border-color);
              font-size: 0.9rem;
@@ -484,7 +480,7 @@
              gap: 10px;
             flex-shrink: 0;
         }
-         .editor-footer .btn { height: 38px; font-size: 0.85rem; padding: 0 15px;} /* Match input height */
+         .editor-footer .btn { height: 38px; font-size: 0.85rem; padding: 0 15px;}
          .editor-footer .btn-delete { background-color: var(--danger); color: white;}
          .editor-footer .btn-delete:hover { background-color: var(--danger-hover);}
          .editor-footer .btn-save { background-color: var(--success); color: white;}
@@ -506,7 +502,7 @@
          #editor-placeholder p { font-size: 1rem; }
 
 
-        .modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background-color: rgba(40,40,40,0.7); /* Darker backdrop */ align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background-color: rgba(40,40,40,0.7); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .modal-content { background-color: var(--light-alt); margin: auto; padding: 0; border: none; width: 90%; max-width: 550px; border-radius: var(--border-radius); box-shadow: var(--shadow-medium); position: relative; display: flex; flex-direction: column; max-height: 90vh; overflow: hidden; border: 1px solid var(--border-color); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 25px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; background: linear-gradient(180deg, var(--light) 0%, #f9fafb 100%); border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius);}
         .modal-title { margin: 0; font-size: 1.2rem; font-weight: 600; }
@@ -523,6 +519,7 @@
          #compare-modal .modal-content { max-width: 950px; }
          #duplicates-modal .modal-content { max-width: 850px; }
          #confirm-modal .modal-content { max-width: 450px; }
+         #duplicates-modal .modal-footer { display: flex; justify-content: space-between; } /* Align buttons */
 
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1100; }
         .toast { background-color: rgba(40, 44, 52, 0.95); color: var(--white); padding: 12px 20px; margin-bottom: 10px; border-radius: var(--border-radius); box-shadow: var(--shadow-medium); opacity: 0; transition: opacity 0.5s, transform 0.5s; transform: translateX(100%); display: flex; align-items: center; gap: 10px; min-width: 280px; font-size: 0.9rem; backdrop-filter: blur(2px);}
@@ -586,7 +583,7 @@
 
     </style>
 </head>
-<body>
+<body >
 
     <div class="dashboard-layout">
         <aside class="sidebar" id="sidebar">
@@ -795,6 +792,7 @@
              <div class="modal-header"> <h5 class="modal-title">Añadir Nuevo Grupo</h5> <button type="button" class="modal-close" data-dismiss="add-group-modal" aria-label="Cerrar">×</button> </div>
             <div class="modal-body">
                  <div><label for="new-group-name">Nombre del Nuevo Grupo:</label><input type="text" id="new-group-name" required></div>
+                 <p style="font-size:0.85rem; margin-top: 15px; color: var(--text-light);">Si hay canales seleccionados, se moverán a este nuevo grupo.</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="add-group-modal">Cancelar</button>
@@ -819,8 +817,11 @@
      <div id="duplicates-modal" class="modal">
          <div class="modal-content">
              <div class="modal-header"> <h5 class="modal-title">Canales con URL Duplicada</h5> <button type="button" class="modal-close" data-dismiss="duplicates-modal">×</button> </div>
-             <div class="modal-body" id="duplicates-list-container"> <p style="font-size: 0.9em;">Se encontraron grupos de canales que comparten la misma URL. Puedes eliminar las repeticiones para cada URL, conservando sólo la primera aparición encontrada.</p> <div id="duplicates-list"></div> </div>
-             <div class="modal-footer"> <button type="button" class="btn btn-outline-secondary" data-dismiss="duplicates-modal">Cerrar</button> </div>
+             <div class="modal-body" id="duplicates-list-container"> <p style="font-size: 0.9em;">Se encontraron grupos de canales que comparten la misma URL. Puedes eliminar las repeticiones para cada URL individualmente o todas a la vez.</p> <div id="duplicates-list"></div> </div>
+             <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="delete-all-duplicates-btn"><i class="fas fa-exclamation-triangle"></i> Borrar Todos los Duplicados</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="duplicates-modal">Cerrar</button>
+             </div>
          </div>
      </div>
      <div id="confirm-modal" class="modal">
@@ -850,8 +851,8 @@
         let duplicatesModified = false;
         let isSidebarExpanded = false;
 
-        const LOCAL_STORAGE_KEY = 'iptvEditorDashboard_session_v3';
-        const SIDEBAR_STATE_KEY = 'iptvEditorSidebarExpanded_v3';
+        const LOCAL_STORAGE_KEY = 'Editor M3U Pro+Dashboard_session_v3';
+        const SIDEBAR_STATE_KEY = 'Editor M3U Pro+SidebarExpanded_v3';
 
         const fileInput = document.getElementById('file-input');
         const compareFileInput = document.getElementById('compare-file-input');
@@ -892,14 +893,15 @@
         const editorGroupCopyBtn = document.getElementById('editor-group-copy-btn');
         const closeEditorBtn = document.getElementById('close-editor-btn');
         const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+        const deleteAllDuplicatesBtn = document.getElementById('delete-all-duplicates-btn');
 
         const groupsManagementModal = document.getElementById('groups-management-modal');
         const groupDetailModal = document.getElementById('group-detail-modal');
         const addGroupModal = document.getElementById('add-group-modal');
-        const groupChangeModal = document.getElementById('group-change-modal');
         const compareModal = document.getElementById('compare-modal');
         const duplicatesModal = document.getElementById('duplicates-modal');
         const confirmModal = document.getElementById('confirm-modal');
+
 
         function escapeHtml(unsafe) {
             if (typeof unsafe !== 'string') return '';
@@ -921,6 +923,7 @@
             }
              img.onerror = null;
         }
+
 
         function showToast(message, type = 'info', duration = 3000) {
             const toast = document.createElement('div');
@@ -959,7 +962,8 @@
 
         const triggerLocalStorageSave = debounce(() => saveToLocalStorage(), 1500);
 
-        function showConfirmationModal(message, title = 'Confirmar Acción', confirmButtonText = 'Confirmar', confirmButtonClass = 'btn-danger') {
+
+         function showConfirmationModal(message, title = 'Confirmar Acción', confirmButtonText = 'Confirmar', confirmButtonClass = 'btn-danger') {
             return new Promise((resolve) => {
                 const confirmTitleEl = document.getElementById('confirm-modal-title');
                 const confirmTextEl = document.getElementById('confirm-modal-text');
@@ -984,9 +988,9 @@
                 openModal(confirmModal);
                 confirmBtnEl.focus();
             });
-        }
+         }
 
-        function displayChannelInEditor(originalIndex) {
+         function displayChannelInEditor(originalIndex) {
              const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
             if (channelIndex === -1) {
                 showEditorPlaceholder();
@@ -1025,21 +1029,21 @@
             const selectedRow = tableBody.querySelector(`tr.channel-row[data-index="${originalIndex}"]`);
             if (selectedRow) {
                 selectedRow.classList.add('selected-row');
-                if (typeof selectedRow.scrollIntoViewIfNeeded === "function") {
+                 if(typeof selectedRow.scrollIntoViewIfNeeded === "function"){
                     selectedRow.scrollIntoViewIfNeeded({ behavior: 'smooth', block: 'nearest' });
-                } else {
-                    selectedRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                 } else {
+                     selectedRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             }
          }
 
-        function showEditorPlaceholder() {
+         function showEditorPlaceholder() {
              selectedChannelOriginalIndex = null;
              editorFormContent.classList.add('hidden');
              editorPlaceholder.classList.remove('hidden');
              document.body.classList.remove('editor-visible');
              tableBody.querySelectorAll('.selected-row').forEach(row => row.classList.remove('selected-row'));
-        }
+         }
 
         async function handleEditorSave() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
@@ -1102,24 +1106,25 @@
             if (kodiLicenseKey) channelData.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey; else delete channelData.kodiProps['inputstream.adaptive.license_key'];
             if (kodiStreamHeaders) channelData.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders; else delete channelData.kodiProps['inputstream.adaptive.stream_headers'];
 
-
             let appliedHeadersCount = 0;
             let didApplyHeaders = false;
-            if (applyHeaders && group && (kodiStreamHeaders || kodiLicenseType || kodiLicenseKey)) {
+            const needsDrmUpdate = kodiStreamHeaders || kodiLicenseType || kodiLicenseKey; // Check if any DRM field has value
+
+            if (applyHeaders && group && needsDrmUpdate) {
                 const countInGroup = channels.filter(c => (c['group-title'] || '') === group).length;
                 const userConfirmedHeaders = await showConfirmationModal(
-                     `¿Aplicar los ajustes DRM introducidos a TODOS los ${countInGroup} canales del grupo "${escapeHtml(group)}"? (Esto sobrescribirá ajustes DRM existentes en esos canales)`,
+                    `¿Aplicar los ajustes DRM introducidos a TODOS los ${countInGroup} canales del grupo "${escapeHtml(group)}"? (Esto sobrescribirá ajustes DRM existentes)`,
                      'Confirmar Aplicar DRM a Grupo',
                      'Sí, Aplicar a Todo el Grupo',
                      'btn-warning'
-                 );
+                );
 
-                 if (userConfirmedHeaders) {
+                if (userConfirmedHeaders) {
                     didApplyHeaders = true;
-                     channels.forEach(otherChannel => {
-                         if((otherChannel['group-title'] || '') === group ) {
+                    channels.forEach(otherChannel => {
+                        if ((otherChannel['group-title'] || '') === group) {
                             otherChannel.kodiProps = otherChannel.kodiProps || {};
-
+                            // Apply ALL DRM fields consistently to the group if confirmed
                             if (kodiLicenseType) otherChannel.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType;
                             else delete otherChannel.kodiProps['inputstream.adaptive.license_type'];
 
@@ -1129,74 +1134,77 @@
                             if (kodiStreamHeaders) otherChannel.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders;
                             else delete otherChannel.kodiProps['inputstream.adaptive.stream_headers'];
 
-                            if(otherChannel.originalIndex !== originalIndex) {
+                            if (otherChannel.originalIndex !== originalIndex) {
                                 appliedHeadersCount++;
                             }
-                         }
+                        }
                     });
-                 } else {
-                     showToast('Aplicación de ajustes DRM al grupo cancelada.', 'info');
-                 }
-             }
-
-            channels[channelIndex] = channelData; // Update current channel always
-
-            if (didApplyHeaders) {
-                renderTable();
-                 if(appliedHeadersCount > 0) {
-                     showToast(`Ajustes DRM actualizados para ${appliedHeadersCount + 1} canales en el grupo.`, 'success');
                 } else {
-                     showToast(`Ajustes DRM del canal guardados.`, 'success'); // Just saved the current one if no others in group
+                    showToast('Aplicación de ajustes DRM al grupo cancelada.', 'info');
+                     applyHeadersCheckbox.checked = false; // Uncheck if cancelled
+                 }
+            }
+
+            // Save the current channel's data regardless of group application
+            channels[channelIndex] = channelData;
+
+            // Determine message and update UI
+            if (didApplyHeaders) {
+                 renderTable(); // Full re-render required
+                if(appliedHeadersCount > 0) {
+                    showToast(`Ajustes DRM actualizados para ${appliedHeadersCount + 1} canales en el grupo.`, 'success');
+                 } else {
+                     showToast(`Ajustes DRM del canal guardados (sin otros canales en grupo).`, 'success');
                  }
              } else {
-                 updateSingleRow(originalIndex);
+                 updateSingleRow(originalIndex); // Just update this row visually
                  showToast('Canal actualizado correctamente.', 'success');
              }
 
             updateGroupOrderIfNeeded(oldGroup, group);
             updateGroupFilter();
-             if (groupsManagementModal.style.display === 'flex') { renderGroupsInModal(); }
-
+            if (groupsManagementModal.style.display === 'flex') { renderGroupsInModal(); }
             triggerLocalStorageSave();
             displayChannelInEditor(originalIndex); // Keep editor focused
-            applyHeadersCheckbox.checked = false; // Reset checkbox
+            applyHeadersCheckbox.checked = false; // Reset after saving attempt
         }
 
 
-         async function handleEditorDelete() {
+        async function handleEditorDelete() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
             const originalIndex = originalIndexStr !== '' ? parseInt(originalIndexStr) : null;
 
-             if (originalIndex === null) {
+            if (originalIndex === null) {
                 showToast("Ningún canal seleccionado para eliminar.", "error");
                 return;
-             }
+            }
 
             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
             if (channelIndex === -1) {
-                 showToast("Canal seleccionado no encontrado.", "error");
+                showToast("Canal seleccionado no encontrado.", "error");
                 showEditorPlaceholder();
                 return;
-             }
+            }
             const channelName = channels[channelIndex].name || `Canal #${originalIndex + 1}`;
 
 
             const userConfirmed = await showConfirmationModal(
-                 `¿Estás seguro que deseas eliminar el canal "<strong>${escapeHtml(channelName)}</strong>"?`,
-                 'Confirmar Eliminación',
-                 'Sí, Eliminar',
-                 'btn-danger'
-             );
+                `¿Estás seguro que deseas eliminar el canal "<strong>${escapeHtml(channelName)}</strong>"?`,
+                'Confirmar Eliminación',
+                'Sí, Eliminar',
+                'btn-danger'
+            );
 
-             if (userConfirmed) {
+            if (userConfirmed) {
                 const deletedGroup = channels[channelIndex]['group-title'] || '';
                 channels.splice(channelIndex, 1);
 
                 selectedRowIndices.delete(originalIndex);
                 showEditorPlaceholder();
 
+                // Correct Re-indexing:
                 let currentIdx = 0;
-                 channels.forEach(ch => {
+                channels.forEach(ch => {
                     ch.originalIndex = currentIdx++;
                 });
 
@@ -1204,100 +1212,82 @@
                 renderTable();
                 updateGroupFilter();
                 if (groupsManagementModal.style.display === 'flex') renderGroupsInModal();
-                 triggerLocalStorageSave();
-                 showToast(`Canal "${escapeHtml(channelName)}" eliminado.`, 'info');
+                triggerLocalStorageSave();
+                showToast(`Canal "${escapeHtml(channelName)}" eliminado.`, 'info');
             }
         }
-
 
         function handleEditorMoveTop() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
             const originalIndex = originalIndexStr !== '' ? parseInt(originalIndexStr) : null;
-             if (originalIndex === null) return;
+            if (originalIndex === null) return;
 
             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
             if (channelIndex === -1) return;
 
-            const channelToMove = channels.splice(channelIndex, 1)[0];
-             if (!channelToMove) return;
+            // If already at the top of its potential group, do nothing
+             let currentGroup = channels[channelIndex]['group-title'] || '';
+             let isAlreadyFirstInGroup = true;
+             for(let i = 0; i < channelIndex; i++){
+                 if((channels[i]['group-title'] || '') === currentGroup) {
+                    isAlreadyFirstInGroup = false;
+                    break;
+                }
+             }
+            if(isAlreadyFirstInGroup) {
+                showToast('El canal ya está al principio de su grupo.', 'info');
+                return;
+            }
 
-             const group = channelToMove['group-title'] || '';
+
+            const channelToMove = channels.splice(channelIndex, 1)[0];
+            if (!channelToMove) return;
 
             let insertAtIndex = 0;
             for (let i = 0; i < channels.length; i++) {
-                if ((channels[i]['group-title'] || '') === group) {
+                 if ((channels[i]['group-title'] || '') === currentGroup) {
                      insertAtIndex = i;
-                     break;
-                }
-                 if (group === '' && i === 0) {
-                     break;
-                 }
-                 if (i > 0 && (channels[i]['group-title'] || '') !== group && (channels[i-1]['group-title'] || '') === group) {
-                     insertAtIndex = i;
-                     break;
+                    break; // Found the first item of the target group
                 }
              }
-             if(channels.length === 0) {
-                insertAtIndex = 0;
-             } else if (insertAtIndex === 0 && group !== (channels[0]['group-title'] || '') && group !== '') {
-                 let foundGroupStart = false;
-                 for (let i = 0; i < channels.length; i++) {
-                    if ((channels[i]['group-title'] || '') === group) {
-                         insertAtIndex = i;
-                         foundGroupStart = true;
-                         break;
-                    }
-                }
-                 if (!foundGroupStart) {
-                     const groupOrderIndex = groupOrder.indexOf(group);
-                     if(groupOrderIndex !== -1) {
-                        let precedingGroup = groupOrderIndex > 0 ? groupOrder[groupOrderIndex - 1] : null;
-                        if (precedingGroup !== null) {
-                             for (let i = channels.length - 1; i >= 0; i--) {
-                                if ((channels[i]['group-title'] || '') === precedingGroup) {
-                                    insertAtIndex = i + 1; break;
-                                }
-                             }
-                         }
+             // If the loop finishes without finding the group, it means the group became empty or was not found.
+             // This edge case might need refinement depending on desired behavior.
+             // For simplicity, splice will insert at found index or beginning/end if group changes.
 
-                     } else {
-                         insertAtIndex = channels.length;
-                     }
-                 }
-             }
 
              channels.splice(insertAtIndex, 0, channelToMove);
 
+            // Correct Re-indexing
              channels.forEach((ch, idx) => ch.originalIndex = idx);
 
              showToast('Canal movido al principio del grupo.', 'info');
              renderTable();
              triggerLocalStorageSave();
-            const newOriginalIndex = channelToMove.originalIndex;
-            displayChannelInEditor(newOriginalIndex);
+            const newOriginalIndex = channelToMove.originalIndex; // Get the new index
+            displayChannelInEditor(newOriginalIndex); // Re-display to update highlight and data
          }
 
+
         function handleEditorGroupMove() {
-             const originalIndexStr = editorChannelOriginalIndexInput.value;
+            const originalIndexStr = editorChannelOriginalIndexInput.value;
             const originalIndex = originalIndexStr !== '' ? parseInt(originalIndexStr) : null;
             const targetGroup = editorChannelGroupInput.value.trim();
 
-
-             if (originalIndex === null) {
+            if (originalIndex === null) {
                 showToast("Primero selecciona un canal para mover.", "warning");
                 return;
             }
-             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+            const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
             if (channelIndex === -1) {
-                 showToast("Canal no encontrado.", "error");
+                showToast("Canal no encontrado.", "error");
                 return;
-             }
+            }
 
             const oldGroup = channels[channelIndex]['group-title'] || '';
 
-             if (targetGroup === oldGroup) {
-                 showToast('El canal ya está en este grupo.', 'info');
-                 return;
+            if (targetGroup === oldGroup) {
+                showToast('El canal ya está en este grupo.', 'info');
+                return;
             }
 
             channels[channelIndex]['group-title'] = targetGroup;
@@ -1310,7 +1300,7 @@
             if (groupsManagementModal.style.display === 'flex') { renderGroupsInModal(); }
             showToast(`Canal movido al grupo "${targetGroup || '(Sin Grupo)'}".`, 'success');
             triggerLocalStorageSave();
-             displayChannelInEditor(originalIndex);
+             displayChannelInEditor(originalIndex); // Refresh editor to confirm group change
          }
 
 
@@ -1405,10 +1395,11 @@
 
              document.getElementById('add-group-confirm-btn').addEventListener('click', handleAddNewGroup);
              document.getElementById('modal-group-save-btn').addEventListener('click', handleGroupDetailModalSave);
-             // No confirm button for group change modal anymore
              document.getElementById('copy-missing-to-a-btn')?.addEventListener('click', copyMissingChannelsToA);
              document.getElementById('merge-lists-btn')?.addEventListener('click', mergeLists);
-             document.getElementById('duplicates-list')?.addEventListener('click', handleDeleteDuplicatesForUrl);
+             document.getElementById('duplicates-list')?.addEventListener('click', handleDeleteDuplicatesForUrl); // Individual delete
+            deleteAllDuplicatesBtn?.addEventListener('click', handleDeleteAllDuplicates); // Add listener for the new button
+
         }
 
          function openModal(modalElement) {
@@ -1462,43 +1453,50 @@
                 return;
             }
 
-            let affectedGroups = new Set();
-            let movedCount = 0;
-            // Move selected channels to this new group
-            if(selectedRowIndices.size > 0){
+             let affectedGroups = new Set();
+             let movedCount = 0;
+
+             if(selectedRowIndices.size > 0){
                  selectedRowIndices.forEach(originalIndex => {
                      const index = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
                      if (index !== -1) {
-                        affectedGroups.add(channels[index]['group-title'] || ''); // Track old groups
-                         channels[index]['group-title'] = newGroupName;
-                         channels[index].attributes = channels[index].attributes || {};
-                         channels[index].attributes['group-title'] = newGroupName;
+                        const oldGrp = channels[index]['group-title'] || '';
+                        affectedGroups.add(oldGrp);
+                        channels[index]['group-title'] = newGroupName;
+                        channels[index].attributes = channels[index].attributes || {};
+                        channels[index].attributes['group-title'] = newGroupName;
+                         // Remove group logo if it existed for the old group maybe? Optional.
+                         // delete channels[index]['group-logo'];
+                         // if(channels[index].attributes) delete channels[index].attributes['group-logo'];
                          movedCount++;
                      }
                  });
+                  // Check if old groups are now empty
+                 affectedGroups.forEach(oldGroup => updateGroupOrderIfNeeded(oldGroup, null));
              }
 
-             groupOrder.push(newGroupName);
-             updateGroupSuggestions();
+             // Add the new group to the order *after* potential removals
+             if (!groupOrder.includes(newGroupName)) {
+                groupOrder.push(newGroupName);
+            }
+            updateGroupSuggestions();
             updateGroupFilter();
+
             if (groupsManagementModal.style.display === 'flex') renderGroupsInModal();
 
-             // Check if any old groups need removing from groupOrder
-             affectedGroups.forEach(oldGroup => updateGroupOrderIfNeeded(oldGroup, null));
+            closeModal(addGroupModal);
+            newGroupNameInput.value = '';
 
-             closeModal(addGroupModal);
-             newGroupNameInput.value = '';
-
-             if (movedCount > 0) {
-                showToast(`Grupo "${escapeHtml(newGroupName)}" creado y ${movedCount} canales movidos.`, 'success');
-                clearMultiSelection(false); // Clear selection after move
+            if (movedCount > 0) {
+                 showToast(`Grupo "${escapeHtml(newGroupName)}" creado y ${movedCount} canales movidos.`, 'success');
+                 clearMultiSelection(false); // Clear selection after moving
             } else {
                  showToast(`Nuevo grupo "${escapeHtml(newGroupName)}" añadido.`, 'success');
             }
 
             triggerLocalStorageSave();
-             renderTable(); // Full re-render needed to show moved channels in new group
-         }
+            renderTable();
+        }
 
 
          function expandAllGroups() {
@@ -1529,7 +1527,6 @@
                      toggleGroupCollapse(groupHeader.dataset.group);
                  }
             } else {
-                // Click outside - now does nothing by default. Close button is explicit.
             }
         }
 
@@ -2191,7 +2188,6 @@
                  tableBody.appendChild(fragment);
              }
 
-
              updateSelectAllCheckboxState();
              updateSortIcons();
         }
@@ -2388,6 +2384,77 @@
          async function handleDeleteDuplicatesForUrl(e) {
             const button = e.target.closest('.delete-duplicates-for-url'); if (!button) return; const url = button.dataset.url; const indicesStr = button.dataset.indices; if (!url || !indicesStr) return; let originalIndices; try { originalIndices = JSON.parse(indicesStr); } catch (err) { showToast('Error procesando índices de duplicados.', 'error'); return; } if (!Array.isArray(originalIndices) || originalIndices.length < 2) return; originalIndices.sort((a, b) => a - b); const indexToKeep = originalIndices[0]; const indicesToDelete = originalIndices.slice(1); const userConfirmed = await showConfirmationModal(`Eliminar ${indicesToDelete.length} duplicados para la URL <br><code>${escapeHtml(url)}</code>?<br>Se conservará el canal #${indexToKeep + 1}.`, 'Confirmar Eliminación de Duplicados', 'Sí, Eliminar Duplicados', 'btn-danger'); if (userConfirmed) { let deletedCount = 0; channels = channels.filter(ch => { const shouldDelete = indicesToDelete.includes(ch.originalIndex); if (shouldDelete) { deletedCount++; selectedRowIndices.delete(ch.originalIndex); if (ch.originalIndex === selectedChannelOriginalIndex) showEditorPlaceholder(); return false; } return true; }); if (deletedCount > 0) { channels.forEach((ch, idx) => ch.originalIndex = idx); showToast(`${deletedCount} canales duplicados eliminados.`, 'success'); button.closest('.duplicate-set').remove(); duplicatesModified = true; triggerLocalStorageSave(); renderTable(); updateSelectAllCheckboxState(); if (document.getElementById('duplicates-list').children.length === 0) closeModal(duplicatesModal); } else { showToast('No se encontraron duplicados para eliminar.', 'warning'); button.closest('.duplicate-set').remove(); } }
         }
+         async function handleDeleteAllDuplicates() {
+            const duplicateSets = duplicatesModal.querySelectorAll('.duplicate-set');
+            if (duplicateSets.length === 0) {
+                showToast('No hay duplicados listados para eliminar.', 'info');
+                return;
+            }
+
+            const totalDupesToDelete = Array.from(duplicateSets).reduce((sum, setDiv) => {
+                try {
+                    const indices = JSON.parse(setDiv.querySelector('button').dataset.indices);
+                    return sum + (indices.length > 1 ? indices.length - 1 : 0);
+                 } catch { return sum; }
+             }, 0);
+
+             if (totalDupesToDelete === 0) {
+                showToast('No hay duplicados válidos para eliminar en la lista.', 'info');
+                return;
+             }
+
+             const userConfirmed = await showConfirmationModal(
+                 `¿Estás seguro que deseas eliminar <strong>TODOS</strong> los ${totalDupesToDelete} canales duplicados listados (conservando siempre la primera aparición de cada URL)?`,
+                'Confirmar Eliminación Masiva',
+                'Sí, Eliminar Todos',
+                'btn-danger'
+             );
+
+            if (userConfirmed) {
+                setLoading(true, "Eliminando duplicados...");
+                 let overallDeletedCount = 0;
+                 const indicesToDeleteSet = new Set();
+
+                 duplicateSets.forEach(setDiv => {
+                    const button = setDiv.querySelector('.delete-duplicates-for-url');
+                     if (!button) return;
+                     const indicesStr = button.dataset.indices;
+                    try {
+                         let originalIndices = JSON.parse(indicesStr);
+                         if (!Array.isArray(originalIndices) || originalIndices.length < 2) return;
+                         originalIndices.sort((a, b) => a - b); // Ensure sorted by original index
+                        originalIndices.slice(1).forEach(idx => indicesToDeleteSet.add(idx)); // Add all except the first to the delete set
+                     } catch (err) {
+                         console.error("Error processing indices for all duplicates deletion:", err);
+                    }
+                 });
+
+                channels = channels.filter(channel => {
+                     const shouldDelete = indicesToDeleteSet.has(channel.originalIndex);
+                     if (shouldDelete) {
+                         overallDeletedCount++;
+                         selectedRowIndices.delete(channel.originalIndex); // Remove from selection if needed
+                         if (channel.originalIndex === selectedChannelOriginalIndex) {
+                            showEditorPlaceholder(); // Close editor if the selected channel is deleted
+                         }
+                         return false; // Filter out the channel
+                    }
+                     return true; // Keep the channel
+                });
+
+                // Re-index all remaining channels
+                 channels.forEach((ch, idx) => ch.originalIndex = idx);
+
+                showToast(`${overallDeletedCount} canales duplicados eliminados en total.`, 'success');
+                closeModal(duplicatesModal);
+                duplicatesModified = true; // Indicate modification
+                renderTable(); // Update the main view
+                updateSelectAllCheckboxState();
+                 triggerLocalStorageSave();
+                setLoading(false);
+             }
+         }
+
          function handleCompareFileSelect(e) {
              const file = e.target.files[0]; if (!file || channels.length === 0) { if(!file) return; showToast('Carga primero una lista principal para comparar.', 'warning'); compareFileInput.value = ''; return; } comparisonFileName = file.name; setLoading(true, `Leyendo archivo de comparación...`); const reader = new FileReader(); reader.onload = (ev) => { try { comparisonChannels = parseM3U(ev.target.result); showToast(`Archivo de comparación "${escapeHtml(comparisonFileName)}" cargado (${comparisonChannels.length} canales). Comparando...`, 'info', 3000); compareLists(); } catch (error) { showToast(`Error procesando archivo de comparación: ${escapeHtml(error.message)}`, 'error', 5000); comparisonChannels = []; comparisonFileName = ''; } finally { setLoading(false); compareFileInput.value = ''; } }; reader.onerror = () => { showToast('Error leyendo archivo de comparación.', 'error'); setLoading(false); comparisonChannels = []; comparisonFileName = ''; compareFileInput.value = ''; }; reader.readAsText(file);
         }
