@@ -150,10 +150,10 @@
              white-space: nowrap;
              opacity: 0;
              margin-left: 10px;
-             transition: opacity 0.2s linear 0.1s;
+             transition: opacity 0.2s linear 0.1s; /* Delay opacity */
              font-size: 0.9rem;
              font-weight: 500;
-             display: none;
+             display: none; /* Initially hidden */
          }
 
         .sidebar-btn:hover, .sidebar-btn.active {
@@ -199,8 +199,8 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
+            /*margin-left: var(--sidebar-collapsed-width); REMOVED - managed by grid now */
         }
-
 
         .main-header {
             background-color: var(--header-bg);
@@ -278,7 +278,7 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            /* border-right: 1px solid var(--border-color);  Border only applied when editor visible */
+            /* border-right: 1px solid var(--border-color);  Border now applied conditionally by JS/Body Class */
             border-right: none;
             overflow: hidden;
             transition: width var(--transition-speed) ease;
@@ -586,7 +586,7 @@
 
     </style>
 </head>
-<body >
+<body>
 
     <div class="dashboard-layout">
         <aside class="sidebar" id="sidebar">
@@ -850,8 +850,8 @@
         let duplicatesModified = false;
         let isSidebarExpanded = false;
 
-        const LOCAL_STORAGE_KEY = 'Editor M3U Pro+Dashboard_session_v3';
-        const SIDEBAR_STATE_KEY = 'Editor M3U Pro+SidebarExpanded_v3';
+        const LOCAL_STORAGE_KEY = 'iptvEditorDashboard_session_v3';
+        const SIDEBAR_STATE_KEY = 'iptvEditorSidebarExpanded_v3';
 
         const fileInput = document.getElementById('file-input');
         const compareFileInput = document.getElementById('compare-file-input');
@@ -896,7 +896,7 @@
         const groupsManagementModal = document.getElementById('groups-management-modal');
         const groupDetailModal = document.getElementById('group-detail-modal');
         const addGroupModal = document.getElementById('add-group-modal');
-        // const groupChangeModal = document.getElementById('group-change-modal'); // Might remove if not used
+        const groupChangeModal = document.getElementById('group-change-modal');
         const compareModal = document.getElementById('compare-modal');
         const duplicatesModal = document.getElementById('duplicates-modal');
         const confirmModal = document.getElementById('confirm-modal');
@@ -959,8 +959,7 @@
 
         const triggerLocalStorageSave = debounce(() => saveToLocalStorage(), 1500);
 
-
-         function showConfirmationModal(message, title = 'Confirmar Acción', confirmButtonText = 'Confirmar', confirmButtonClass = 'btn-danger') {
+        function showConfirmationModal(message, title = 'Confirmar Acción', confirmButtonText = 'Confirmar', confirmButtonClass = 'btn-danger') {
             return new Promise((resolve) => {
                 const confirmTitleEl = document.getElementById('confirm-modal-title');
                 const confirmTextEl = document.getElementById('confirm-modal-text');
@@ -985,9 +984,9 @@
                 openModal(confirmModal);
                 confirmBtnEl.focus();
             });
-         }
+        }
 
-         function displayChannelInEditor(originalIndex) {
+        function displayChannelInEditor(originalIndex) {
              const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
             if (channelIndex === -1) {
                 showEditorPlaceholder();
@@ -1026,37 +1025,37 @@
             const selectedRow = tableBody.querySelector(`tr.channel-row[data-index="${originalIndex}"]`);
             if (selectedRow) {
                 selectedRow.classList.add('selected-row');
-                 if(typeof selectedRow.scrollIntoViewIfNeeded === "function"){
+                if (typeof selectedRow.scrollIntoViewIfNeeded === "function") {
                     selectedRow.scrollIntoViewIfNeeded({ behavior: 'smooth', block: 'nearest' });
-                 } else {
-                     selectedRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    selectedRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
             }
          }
 
-         function showEditorPlaceholder() {
+        function showEditorPlaceholder() {
              selectedChannelOriginalIndex = null;
              editorFormContent.classList.add('hidden');
              editorPlaceholder.classList.remove('hidden');
              document.body.classList.remove('editor-visible');
              tableBody.querySelectorAll('.selected-row').forEach(row => row.classList.remove('selected-row'));
-         }
+        }
 
         async function handleEditorSave() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
             const originalIndex = originalIndexStr !== '' ? parseInt(originalIndexStr) : null;
 
-             if (originalIndex === null) {
-                 showToast("Ningún canal seleccionado para guardar.", "error");
-                 return;
-             }
+            if (originalIndex === null) {
+                showToast("Ningún canal seleccionado para guardar.", "error");
+                return;
+            }
 
-             const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+            const channelIndex = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
             if (channelIndex === -1) {
-                 showToast("Canal seleccionado no encontrado.", "error");
-                 showEditorPlaceholder();
-                 return;
-             }
+                showToast("Canal seleccionado no encontrado.", "error");
+                showEditorPlaceholder();
+                return;
+            }
 
             const name = editorChannelNameInput.value.trim();
             const url = editorChannelUrlInput.value.trim();
@@ -1077,8 +1076,8 @@
                 showToast('Formato de URL de Stream inválido.', 'error'); editorChannelUrlInput.focus(); return;
             }
 
-             let channelData = channels[channelIndex];
-             const oldGroup = channelData['group-title'] || '';
+            let channelData = channels[channelIndex];
+            const oldGroup = channelData['group-title'] || '';
 
             channelData.name = name;
             channelData.url = url;
@@ -1089,29 +1088,30 @@
             channelData['tvg-name'] = syncName ? name : (channelData['tvg-name'] || name);
             channelData.favorite = isFavorite;
 
-             channelData.attributes = channelData.attributes || {};
-             channelData.attributes['group-title'] = group;
-             channelData.attributes['tvg-logo'] = logo;
-             channelData.attributes['tvg-id'] = tvgId;
-             channelData.attributes['ch-number'] = chNum;
-             channelData.attributes['tvg-name'] = channelData['tvg-name'];
-             channelData.attributes['syncTvgName'] = syncName ? 'true' : 'false';
-             channelData.attributes['hidden'] = hideChannel ? 'true' : 'false';
+            channelData.attributes = channelData.attributes || {};
+            channelData.attributes['group-title'] = group;
+            channelData.attributes['tvg-logo'] = logo;
+            channelData.attributes['tvg-id'] = tvgId;
+            channelData.attributes['ch-number'] = chNum;
+            channelData.attributes['tvg-name'] = channelData['tvg-name'];
+            channelData.attributes['syncTvgName'] = syncName ? 'true' : 'false';
+            channelData.attributes['hidden'] = hideChannel ? 'true' : 'false';
 
-             channelData.kodiProps = channelData.kodiProps || {};
-             if (kodiLicenseType) channelData.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType; else delete channelData.kodiProps['inputstream.adaptive.license_type'];
-             if (kodiLicenseKey) channelData.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey; else delete channelData.kodiProps['inputstream.adaptive.license_key'];
-             if (kodiStreamHeaders) channelData.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders; else delete channelData.kodiProps['inputstream.adaptive.stream_headers'];
+            channelData.kodiProps = channelData.kodiProps || {};
+            if (kodiLicenseType) channelData.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType; else delete channelData.kodiProps['inputstream.adaptive.license_type'];
+            if (kodiLicenseKey) channelData.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey; else delete channelData.kodiProps['inputstream.adaptive.license_key'];
+            if (kodiStreamHeaders) channelData.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders; else delete channelData.kodiProps['inputstream.adaptive.stream_headers'];
 
 
-             let appliedHeadersCount = 0;
-            let didApplyHeaders = false; // Track if headers were applied to other channels
-            if(applyHeaders && group && (kodiStreamHeaders || kodiLicenseType || kodiLicenseKey)){
-                 const userConfirmedHeaders = await showConfirmationModal(
-                     `¿Aplicar las cabeceras y/o licencia DRM introducidas a TODOS los ${channels.filter(c => (c['group-title'] || '') === group).length} canales del grupo "${escapeHtml(group)}"? (Esto sobrescribirá ajustes DRM existentes en esos canales)`,
-                      'Confirmar Aplicar DRM a Grupo',
-                      'Sí, Aplicar a Todo el Grupo',
-                      'btn-warning'
+            let appliedHeadersCount = 0;
+            let didApplyHeaders = false;
+            if (applyHeaders && group && (kodiStreamHeaders || kodiLicenseType || kodiLicenseKey)) {
+                const countInGroup = channels.filter(c => (c['group-title'] || '') === group).length;
+                const userConfirmedHeaders = await showConfirmationModal(
+                     `¿Aplicar los ajustes DRM introducidos a TODOS los ${countInGroup} canales del grupo "${escapeHtml(group)}"? (Esto sobrescribirá ajustes DRM existentes en esos canales)`,
+                     'Confirmar Aplicar DRM a Grupo',
+                     'Sí, Aplicar a Todo el Grupo',
+                     'btn-warning'
                  );
 
                  if (userConfirmedHeaders) {
@@ -1119,17 +1119,17 @@
                      channels.forEach(otherChannel => {
                          if((otherChannel['group-title'] || '') === group ) {
                             otherChannel.kodiProps = otherChannel.kodiProps || {};
-                            // Apply fields only if they have values in the editor
+
+                            if (kodiLicenseType) otherChannel.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType;
+                            else delete otherChannel.kodiProps['inputstream.adaptive.license_type'];
+
+                            if (kodiLicenseKey) otherChannel.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey;
+                            else delete otherChannel.kodiProps['inputstream.adaptive.license_key'];
+
                             if (kodiStreamHeaders) otherChannel.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders;
                             else delete otherChannel.kodiProps['inputstream.adaptive.stream_headers'];
 
-                            if (kodiLicenseType) otherChannel.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType;
-                             else delete otherChannel.kodiProps['inputstream.adaptive.license_type'];
-
-                             if (kodiLicenseKey) otherChannel.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey;
-                             else delete otherChannel.kodiProps['inputstream.adaptive.license_key'];
-
-                             if(otherChannel.originalIndex !== originalIndex) {
+                            if(otherChannel.originalIndex !== originalIndex) {
                                 appliedHeadersCount++;
                             }
                          }
@@ -1139,29 +1139,28 @@
                  }
              }
 
-            channels[channelIndex] = channelData; // Ensure current channel data is always updated
+            channels[channelIndex] = channelData; // Update current channel always
 
             if (didApplyHeaders) {
-                renderTable(); // Full re-render if multiple channels potentially changed
-                if(appliedHeadersCount > 0) {
-                     showToast(`Ajustes DRM actualizados para ${appliedHeadersCount + 1} canales en el grupo.`, 'info');
+                renderTable();
+                 if(appliedHeadersCount > 0) {
+                     showToast(`Ajustes DRM actualizados para ${appliedHeadersCount + 1} canales en el grupo.`, 'success');
                 } else {
-                     showToast(`Ajustes DRM del canal guardados.`, 'success'); // Just saved the current one
+                     showToast(`Ajustes DRM del canal guardados.`, 'success'); // Just saved the current one if no others in group
                  }
-            } else {
-                 updateSingleRow(originalIndex); // Just update the single row if only this channel changed
+             } else {
+                 updateSingleRow(originalIndex);
                  showToast('Canal actualizado correctamente.', 'success');
-            }
-
+             }
 
             updateGroupOrderIfNeeded(oldGroup, group);
             updateGroupFilter();
              if (groupsManagementModal.style.display === 'flex') { renderGroupsInModal(); }
 
             triggerLocalStorageSave();
-            displayChannelInEditor(originalIndex);
-             applyHeadersCheckbox.checked = false;
-         }
+            displayChannelInEditor(originalIndex); // Keep editor focused
+            applyHeadersCheckbox.checked = false; // Reset checkbox
+        }
 
 
          async function handleEditorDelete() {
@@ -1406,7 +1405,7 @@
 
              document.getElementById('add-group-confirm-btn').addEventListener('click', handleAddNewGroup);
              document.getElementById('modal-group-save-btn').addEventListener('click', handleGroupDetailModalSave);
-             // Removed listener for group change modal confirm button
+             // No confirm button for group change modal anymore
              document.getElementById('copy-missing-to-a-btn')?.addEventListener('click', copyMissingChannelsToA);
              document.getElementById('merge-lists-btn')?.addEventListener('click', mergeLists);
              document.getElementById('duplicates-list')?.addEventListener('click', handleDeleteDuplicatesForUrl);
@@ -1462,15 +1461,43 @@
                 showToast(`El grupo "${escapeHtml(newGroupName)}" ya existe.`, 'warning');
                 return;
             }
+
+            let affectedGroups = new Set();
+            let movedCount = 0;
+            // Move selected channels to this new group
+            if(selectedRowIndices.size > 0){
+                 selectedRowIndices.forEach(originalIndex => {
+                     const index = channels.findIndex(ch => ch && ch.originalIndex === originalIndex);
+                     if (index !== -1) {
+                        affectedGroups.add(channels[index]['group-title'] || ''); // Track old groups
+                         channels[index]['group-title'] = newGroupName;
+                         channels[index].attributes = channels[index].attributes || {};
+                         channels[index].attributes['group-title'] = newGroupName;
+                         movedCount++;
+                     }
+                 });
+             }
+
              groupOrder.push(newGroupName);
              updateGroupSuggestions();
             updateGroupFilter();
+            if (groupsManagementModal.style.display === 'flex') renderGroupsInModal();
+
+             // Check if any old groups need removing from groupOrder
+             affectedGroups.forEach(oldGroup => updateGroupOrderIfNeeded(oldGroup, null));
+
              closeModal(addGroupModal);
              newGroupNameInput.value = '';
-             showToast(`Nuevo grupo "${escapeHtml(newGroupName)}" añadido.`, 'success');
-            if (groupsManagementModal.style.display === 'flex') renderGroupsInModal();
+
+             if (movedCount > 0) {
+                showToast(`Grupo "${escapeHtml(newGroupName)}" creado y ${movedCount} canales movidos.`, 'success');
+                clearMultiSelection(false); // Clear selection after move
+            } else {
+                 showToast(`Nuevo grupo "${escapeHtml(newGroupName)}" añadido.`, 'success');
+            }
+
             triggerLocalStorageSave();
-             renderTable();
+             renderTable(); // Full re-render needed to show moved channels in new group
          }
 
 
@@ -1502,8 +1529,7 @@
                      toggleGroupCollapse(groupHeader.dataset.group);
                  }
             } else {
-                 // Clicking outside interactive elements in the table doesn't hide the editor anymore by default.
-                 // Use the close button (×) in the editor header instead.
+                // Click outside - now does nothing by default. Close button is explicit.
             }
         }
 
@@ -2164,6 +2190,7 @@
              } else {
                  tableBody.appendChild(fragment);
              }
+
 
              updateSelectAllCheckboxState();
              updateSortIcons();
