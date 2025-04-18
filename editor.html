@@ -101,7 +101,6 @@
              font-size: 1.1em;
         }
 
-
         .sidebar-logo {
             color: var(--primary);
             font-size: 1.8em;
@@ -116,7 +115,6 @@
             opacity: 0;
              transition: opacity 0.2s linear;
         }
-
 
         .sidebar-nav ul { list-style: none; padding: 0; margin: 0; width: 100%; text-align: center; }
         .sidebar-nav li { margin-bottom: 5px; }
@@ -185,7 +183,6 @@
          body.sidebar-expanded .sidebar-btn { width: calc(100% - 20px); justify-content: flex-start; margin-left: 10px; margin-right: 10px; }
          body.sidebar-expanded .sidebar-btn i { margin-right: 0; }
          body.sidebar-expanded .sidebar-btn-text { display: inline; opacity: 1; }
-
 
 
         .main-area {
@@ -363,6 +360,10 @@
             transition: width var(--transition-speed) ease, padding var(--transition-speed) ease, opacity var(--transition-speed) ease, border-left var(--transition-speed) ease;
             opacity: 0;
             flex-shrink: 0;
+            user-select: none; /* Prevents text selection when scrolling */
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
         }
         body.editor-visible .editor-panel {
             width: 40%;
@@ -380,7 +381,7 @@
              padding-bottom: 10px;
              border-bottom: 1px solid var(--border-color);
              flex-shrink: 0;
-             background-color: var(--light-alt); /* Ensure header matches background */
+             background-color: var(--light-alt);
          }
          .editor-panel-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; }
           .editor-panel-header i { color: var(--primary); margin-right: 8px; }
@@ -465,7 +466,7 @@
              font-size: 0.9rem;
              color: var(--primary);
          }
-         #apply-headers-check-container, #apply-useragent-check-container { margin-top: 8px; } /* Separate checkbox spacing */
+         #apply-headers-check-container, #apply-useragent-check-container { margin-top: 8px; }
 
 
         .editor-footer {
@@ -744,7 +745,6 @@
                                     <label for="editor-apply-useragent-to-group">Aplicar User-Agent a todo el grupo actual</label>
                                 </div>
                              </div>
-
                         </div>
                         <div class="editor-footer">
                              <button type="button" class="btn btn-save" id="editor-save-btn"><i class="fas fa-save"></i> Guardar Todo</button>
@@ -907,7 +907,6 @@
         const groupsManagementModal = document.getElementById('groups-management-modal');
         const groupDetailModal = document.getElementById('group-detail-modal');
         const addGroupModal = document.getElementById('add-group-modal');
-        //const groupChangeModal = document.getElementById('group-change-modal'); // No longer needed?
         const compareModal = document.getElementById('compare-modal');
         const duplicatesModal = document.getElementById('duplicates-modal');
         const confirmModal = document.getElementById('confirm-modal');
@@ -983,7 +982,7 @@
                 confirmBtnEl.className = `btn ${confirmButtonClass}`;
 
                 const close = (result) => {
-                    closeModal(confirmModal);
+                     closeModal(confirmModal);
                     confirmBtnEl.onclick = null;
                     cancelBtnEl.onclick = null;
                     resolve(result);
@@ -1024,9 +1023,9 @@
             editorKodiLicenseTypeInput.value = kodiProps['inputstream.adaptive.license_type'] || '';
             editorKodiLicenseKeyInput.value = kodiProps['inputstream.adaptive.license_key'] || '';
             editorKodiStreamHeadersInput.value = kodiProps['inputstream.adaptive.stream_headers'] || '';
-             editorVlcUserAgentInput.value = channel.vlcOptions?.['http-user-agent'] || '';
-             applyHeadersCheckbox.checked = false;
-             applyUserAgentCheckbox.checked = false; // Reset apply checkboxes
+            editorVlcUserAgentInput.value = channel.vlcOptions?.['http-user-agent'] || '';
+            applyHeadersCheckbox.checked = false;
+            applyUserAgentCheckbox.checked = false;
 
             editorPlaceholder.classList.add('hidden');
             editorFormContent.classList.remove('hidden');
@@ -1086,7 +1085,6 @@
             const applyHeaders = applyHeadersCheckbox.checked;
             const applyUserAgent = applyUserAgentCheckbox.checked;
 
-
             if (!name) { showToast('El nombre del canal es obligatorio.', 'error'); editorChannelNameInput.focus(); return; }
             if (!url || !(/^(https?|rtmp|rtsp|udp|http|hls):/i.test(url) || url.startsWith('/') || url.includes('://'))) {
                 showToast('Formato de URL de Stream inválido.', 'error'); editorChannelUrlInput.focus(); return;
@@ -1121,93 +1119,91 @@
             channelData.vlcOptions = channelData.vlcOptions || {};
             if (vlcUserAgent) channelData.vlcOptions['http-user-agent'] = vlcUserAgent; else delete channelData.vlcOptions['http-user-agent'];
 
-            let appliedCount = 0;
-            let confirmedAction = false;
-            let messageDetails = [];
 
-            // Apply DRM & Headers to group?
-            if (applyHeaders && group && (kodiStreamHeaders || kodiLicenseType || kodiLicenseKey)) {
-                 const countInGroup = channels.filter(c => (c['group-title'] || '') === group).length;
-                 confirmedAction = await showConfirmationModal(
-                     `¿Aplicar los ajustes DRM introducidos a TODOS los ${countInGroup} canales del grupo "${escapeHtml(group)}"? (Esto sobrescribirá ajustes DRM existentes)`,
-                      'Confirmar Aplicar DRM a Grupo',
-                      'Sí, Aplicar DRM a Grupo',
-                      'btn-warning'
-                 );
+            let appliedHeadersCount = 0;
+            let didApplyHeaders = false;
+            let appliedUserAgentCount = 0;
+            let didApplyUserAgent = false;
+            let confirmedGroupAction = false; // Flag to avoid asking twice if both apply checked
 
-                 if (confirmedAction) {
-                     channels.forEach(otherChannel => {
-                         if((otherChannel['group-title'] || '') === group ) {
-                            otherChannel.kodiProps = otherChannel.kodiProps || {};
-                            if (kodiLicenseType) otherChannel.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType; else delete otherChannel.kodiProps['inputstream.adaptive.license_type'];
-                            if (kodiLicenseKey) otherChannel.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey; else delete otherChannel.kodiProps['inputstream.adaptive.license_key'];
-                            if (kodiStreamHeaders) otherChannel.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders; else delete otherChannel.kodiProps['inputstream.adaptive.stream_headers'];
-                             if(otherChannel.originalIndex !== originalIndex) appliedCount++;
-                         }
-                    });
-                     messageDetails.push(`Ajustes DRM aplicados a ${appliedCount+1} canales`);
-                 } else {
+            const needsDrmUpdate = kodiLicenseType || kodiLicenseKey || kodiStreamHeaders;
+
+            if(applyHeaders && group && needsDrmUpdate) {
+                const countInGroup = channels.filter(c => (c['group-title'] || '') === group).length;
+                const userConfirmedHeaders = await showConfirmationModal(
+                    `¿Aplicar los ajustes DRM introducidos a TODOS los ${countInGroup} canales del grupo "${escapeHtml(group)}"? (Sobrescribe ajustes DRM existentes)`,
+                    'Confirmar Aplicar DRM a Grupo',
+                    'Sí, Aplicar DRM', 'btn-warning'
+                );
+                 if (userConfirmedHeaders) {
+                    confirmedGroupAction = true; // Mark that confirmation happened
+                     didApplyHeaders = true;
+                    channels.forEach(otherChannel => {
+                        if((otherChannel['group-title'] || '') === group ) {
+                           otherChannel.kodiProps = otherChannel.kodiProps || {};
+                           if (kodiLicenseType) otherChannel.kodiProps['inputstream.adaptive.license_type'] = kodiLicenseType; else delete otherChannel.kodiProps['inputstream.adaptive.license_type'];
+                           if (kodiLicenseKey) otherChannel.kodiProps['inputstream.adaptive.license_key'] = kodiLicenseKey; else delete otherChannel.kodiProps['inputstream.adaptive.license_key'];
+                           if (kodiStreamHeaders) otherChannel.kodiProps['inputstream.adaptive.stream_headers'] = kodiStreamHeaders; else delete otherChannel.kodiProps['inputstream.adaptive.stream_headers'];
+                           if(otherChannel.originalIndex !== originalIndex) appliedHeadersCount++;
+                        }
+                   });
+                } else {
                     showToast('Aplicación de ajustes DRM al grupo cancelada.', 'info');
-                    applyHeadersCheckbox.checked = false; // Uncheck if cancelled
+                     applyHeadersCheckbox.checked = false; // Uncheck if cancelled
                  }
             }
 
-            appliedCount = 0; // Reset for next check
-            let userAgentApplied = false;
-            // Apply User Agent to group?
-            if(applyUserAgent && group && vlcUserAgent){
-                // No need to confirm again if already confirmed for DRM
-                let confirmUserAgent = !confirmedAction;
+             if(applyUserAgent && group && vlcUserAgent) {
+                 let confirmUserAgent = !confirmedGroupAction; // Ask only if not already confirmed for DRM
                 if (confirmUserAgent) {
-                    const countInGroup = channels.filter(c => (c['group-title'] || '') === group).length;
-                    confirmUserAgent = await showConfirmationModal(
+                     const countInGroup = channels.filter(c => (c['group-title'] || '') === group).length;
+                     confirmUserAgent = await showConfirmationModal(
                          `¿Aplicar el User-Agent introducido a TODOS los ${countInGroup} canales del grupo "${escapeHtml(group)}"?`,
-                          'Confirmar Aplicar User-Agent a Grupo',
-                         'Sí, Aplicar User-Agent',
-                         'btn-warning'
-                    );
+                         'Confirmar Aplicar User-Agent a Grupo',
+                         'Sí, Aplicar User-Agent', 'btn-warning'
+                     );
                 }
 
-                if (confirmUserAgent) {
-                    userAgentApplied = true;
+                 if (confirmUserAgent || confirmedGroupAction) { // Apply if confirmed specifically or if DRM confirm already happened
+                    didApplyUserAgent = true;
                     channels.forEach(otherChannel => {
-                         if((otherChannel['group-title'] || '') === group ) {
+                        if ((otherChannel['group-title'] || '') === group) {
                              otherChannel.vlcOptions = otherChannel.vlcOptions || {};
-                            if (vlcUserAgent) otherChannel.vlcOptions['http-user-agent'] = vlcUserAgent;
-                            else delete otherChannel.vlcOptions['http-user-agent'];
-                             if(otherChannel.originalIndex !== originalIndex) appliedCount++;
+                             if (vlcUserAgent) otherChannel.vlcOptions['http-user-agent'] = vlcUserAgent;
+                             else delete otherChannel.vlcOptions['http-user-agent'];
+                            if (otherChannel.originalIndex !== originalIndex) appliedUserAgentCount++;
                          }
-                     });
-                     messageDetails.push(`User-Agent aplicado a ${appliedCount+1} canales`);
+                    });
                  } else {
-                    if(applyUserAgent) showToast('Aplicación de User-Agent al grupo cancelada.', 'info'); // Show message only if this checkbox was ticked
+                    if (applyUserAgent) showToast('Aplicación de User-Agent al grupo cancelada.', 'info'); // Only show toast if checkbox was initially ticked
                     applyUserAgentCheckbox.checked = false;
-                 }
-            }
-
-            channels[channelIndex] = channelData; // Final save for the edited channel
-
-            if (didApplyHeaders || userAgentApplied) {
-                 renderTable(); // Need full render if group changes occurred
-            } else {
-                 updateSingleRow(originalIndex); // Only update this row otherwise
+                }
              }
 
+
+            channels[channelIndex] = channelData; // Save current channel changes regardless of group actions
+
+            let finalToastMessage = 'Canal actualizado correctamente.';
+             if(didApplyHeaders || didApplyUserAgent){
+                 renderTable(); // Full refresh needed if group items changed
+                 let messages = [];
+                 if(didApplyHeaders) messages.push(`Ajustes DRM aplicados a ${appliedHeadersCount + 1} canales`);
+                 if(didApplyUserAgent) messages.push(`User-Agent aplicado a ${appliedUserAgentCount + 1} canales`);
+                 finalToastMessage = messages.join('. ');
+             } else {
+                 updateSingleRow(originalIndex); // Just update this row
+            }
+
+            showToast(finalToastMessage, 'success');
             updateGroupOrderIfNeeded(oldGroup, group);
             updateGroupFilter();
-             if (groupsManagementModal.style.display === 'flex') { renderGroupsInModal(); }
-
-            let finalToastMessage = 'Canal actualizado.';
-            if (messageDetails.length > 0) {
-                finalToastMessage = messageDetails.join('. ') + '.';
-            }
-             showToast(finalToastMessage, 'success');
-
+            if (groupsManagementModal.style.display === 'flex') renderGroupsInModal();
             triggerLocalStorageSave();
-            displayChannelInEditor(originalIndex);
-            applyHeadersCheckbox.checked = false;
+            displayChannelInEditor(originalIndex); // Keep editor focused
+            applyHeadersCheckbox.checked = false; // Reset checkboxes
             applyUserAgentCheckbox.checked = false;
-         }
+        }
+
 
         async function handleEditorDelete() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
@@ -1240,6 +1236,7 @@
                 selectedRowIndices.delete(originalIndex);
                 showEditorPlaceholder();
 
+                // Correct Re-indexing:
                 let currentIdx = 0;
                 channels.forEach(ch => {
                     ch.originalIndex = currentIdx++;
@@ -1271,51 +1268,42 @@
                     break;
                  }
             }
-             if(isAlreadyFirst && channelIndex === 0) { // Also check if it's absolute first
-                 showToast('El canal ya está al principio de la lista.', 'info');
-                 return;
+             // Check edge case where it *is* the first channel of the group already
+            let firstIndexOfGroup = -1;
+            for(let i=0; i<channels.length; i++){
+                 if((channels[i]['group-title'] || '') === currentGroup) {
+                    firstIndexOfGroup = i;
+                    break;
+                 }
              }
-             if(isAlreadyFirst && channelIndex !== 0) { // Check if it's first within its group but not overall first
-                let firstIndexOfGroup = -1;
-                 for(let i = 0; i < channels.length; i++) {
-                    if ((channels[i]['group-title'] || '') === currentGroup) {
-                        firstIndexOfGroup = i;
-                        break;
-                    }
-                 }
-                 if(channelIndex === firstIndexOfGroup) {
-                     showToast('El canal ya está al principio de su grupo.', 'info');
-                     return;
-                 }
+             if(channelIndex === firstIndexOfGroup){
+                 showToast('El canal ya está al principio de su grupo.', 'info');
+                 return;
              }
 
 
             const channelToMove = channels.splice(channelIndex, 1)[0];
             if (!channelToMove) return;
 
-
             let insertAtIndex = 0;
-            for (let i = 0; i < channels.length; i++) {
+             for (let i = 0; i < channels.length; i++) {
                 if ((channels[i]['group-title'] || '') === currentGroup) {
                      insertAtIndex = i;
                     break;
-                }
-                 if (group === '' && i === 0) {
-                     break;
                  }
-             }
+            }
 
+            channels.splice(insertAtIndex, 0, channelToMove);
 
-             channels.splice(insertAtIndex, 0, channelToMove);
+            channels.forEach((ch, idx) => ch.originalIndex = idx);
 
-             channels.forEach((ch, idx) => ch.originalIndex = idx);
-
-             showToast('Canal movido al principio del grupo.', 'info');
-             renderTable();
-             triggerLocalStorageSave();
+            showToast('Canal movido al principio del grupo.', 'info');
+            renderTable();
+            triggerLocalStorageSave();
             const newOriginalIndex = channelToMove.originalIndex; // Get the new index after splice
             displayChannelInEditor(newOriginalIndex);
          }
+
 
         function handleEditorGroupMove() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
@@ -1352,7 +1340,6 @@
             displayChannelInEditor(originalIndex);
         }
 
-
         function handleEditorGroupCopy() {
             const originalIndexStr = editorChannelOriginalIndexInput.value;
             const originalIndex = originalIndexStr !== '' ? parseInt(originalIndexStr) : null;
@@ -1383,20 +1370,19 @@
             triggerLocalStorageSave();
          }
 
-         function initEditorPanelListeners() {
+        function initEditorPanelListeners() {
             editorSaveBtn.addEventListener('click', handleEditorSave);
-             editorDeleteBtn.addEventListener('click', handleEditorDelete);
+            editorDeleteBtn.addEventListener('click', handleEditorDelete);
             editorMoveTopBtn.addEventListener('click', handleEditorMoveTop);
-             editorGroupMoveBtn.addEventListener('click', handleEditorGroupMove);
-             editorGroupCopyBtn.addEventListener('click', handleEditorGroupCopy);
-             closeEditorBtn.addEventListener('click', showEditorPlaceholder);
+            editorGroupMoveBtn.addEventListener('click', handleEditorGroupMove);
+            editorGroupCopyBtn.addEventListener('click', handleEditorGroupCopy);
+            closeEditorBtn.addEventListener('click', showEditorPlaceholder);
 
             editorChannelLogoInput.addEventListener('input', () => {
                 editorLogoPreview.src = editorChannelLogoInput.value.trim();
                 editorLogoPreview.style.display = editorChannelLogoInput.value.trim() ? 'block' : 'none';
             });
-         }
-
+        }
 
         function initEventListeners() {
             document.getElementById('open-btn').addEventListener('click', () => fileInput.click());
@@ -1405,65 +1391,64 @@
             compareFileInput.addEventListener('change', handleCompareFileSelect);
             document.getElementById('save-btn').addEventListener('click', saveToFile);
             document.getElementById('new-list-btn').addEventListener('click', handleNewList);
-             document.getElementById('manage-groups-btn').addEventListener('click', openGroupsManagementModal);
+            document.getElementById('manage-groups-btn').addEventListener('click', openGroupsManagementModal);
             document.getElementById('validate-urls-btn').addEventListener('click', validateAllUrls);
             document.getElementById('find-duplicates-btn').addEventListener('click', findAndShowDuplicatesModal);
-             toggleFavoritesBtn.addEventListener('click', toggleFavoritesFilter);
-             document.getElementById('clear-storage-btn').addEventListener('click', handleClearStorage);
-             sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            toggleFavoritesBtn.addEventListener('click', toggleFavoritesFilter);
+            document.getElementById('clear-storage-btn').addEventListener('click', handleClearStorage);
+            sidebarToggleBtn.addEventListener('click', toggleSidebar);
 
             document.getElementById('add-channel-btn-header').addEventListener('click', addNewChannelToList);
             document.getElementById('add-group-btn-header').addEventListener('click', () => openModal(addGroupModal));
             document.getElementById('expand-groups-btn').addEventListener('click', expandAllGroups);
             document.getElementById('collapse-groups-btn').addEventListener('click', collapseAllGroups);
 
-             searchInput.addEventListener('input', debounce(renderTable, 300));
+            searchInput.addEventListener('input', debounce(renderTable, 300));
             groupFilterSelect.addEventListener('change', (e) => { currentGroupFilter = e.target.value; renderTable(); triggerLocalStorageSave(); });
             document.getElementById('delete-selected-btn').addEventListener('click', deleteSelectedChannels);
             document.getElementById('clear-selection-btn').addEventListener('click', clearMultiSelection);
 
             document.querySelectorAll('#channels-table th.sortable').forEach(th => { th.addEventListener('click', () => handleSort(th.dataset.sort)); });
-             selectAllCheckbox.addEventListener('change', handleSelectAllVisible);
-             tableBody.addEventListener('change', handleRowCheckboxChange);
-             tableBody.addEventListener('click', handleTableBodyClick);
+            selectAllCheckbox.addEventListener('change', handleSelectAllVisible);
+            tableBody.addEventListener('change', handleRowCheckboxChange);
+            tableBody.addEventListener('click', handleTableBodyClick);
 
-             initEditorPanelListeners();
+            initEditorPanelListeners();
 
-             document.querySelectorAll('.modal').forEach(modal => {
-                 const closeButtons = modal.querySelectorAll('.modal-close, [data-dismiss]');
-                 closeButtons.forEach(btn => {
-                     btn.addEventListener('click', (e) => {
-                         e.stopPropagation();
-                        const targetModalId = btn.getAttribute('data-dismiss');
-                        const targetModal = targetModalId ? document.getElementById(targetModalId) : modal;
-                        if (targetModal) closeModal(targetModal);
-                    });
-                 });
-                 modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
+            document.querySelectorAll('.modal').forEach(modal => {
+                const closeButtons = modal.querySelectorAll('.modal-close, [data-dismiss]');
+                closeButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                       const targetModalId = btn.getAttribute('data-dismiss');
+                       const targetModal = targetModalId ? document.getElementById(targetModalId) : modal;
+                       if (targetModal) closeModal(targetModal);
+                   });
+                });
+                modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
             });
 
-             document.getElementById('add-group-confirm-btn').addEventListener('click', handleAddNewGroup);
-             document.getElementById('modal-group-save-btn').addEventListener('click', handleGroupDetailModalSave);
-             // document.getElementById('group-change-confirm-btn')?.addEventListener('click', handleGroupChangeConfirm); // Listener removed
-             document.getElementById('copy-missing-to-a-btn')?.addEventListener('click', copyMissingChannelsToA);
-             document.getElementById('merge-lists-btn')?.addEventListener('click', mergeLists);
-             document.getElementById('duplicates-list')?.addEventListener('click', handleDeleteDuplicatesForUrl);
-             deleteAllDuplicatesBtn?.addEventListener('click', handleDeleteAllDuplicates); // Added listener
+            document.getElementById('add-group-confirm-btn').addEventListener('click', handleAddNewGroup);
+            document.getElementById('modal-group-save-btn').addEventListener('click', handleGroupDetailModalSave);
+            document.getElementById('copy-missing-to-a-btn')?.addEventListener('click', copyMissingChannelsToA);
+            document.getElementById('merge-lists-btn')?.addEventListener('click', mergeLists);
+            document.getElementById('duplicates-list')?.addEventListener('click', handleDeleteDuplicatesForUrl);
+            deleteAllDuplicatesBtn?.addEventListener('click', handleDeleteAllDuplicates);
         }
 
-         function openModal(modalElement) {
+        function openModal(modalElement) {
             if (modalElement) modalElement.style.display = 'flex';
-         }
+        }
 
         function closeModal(modalElement) {
-             if (modalElement) modalElement.style.display = 'none';
+            if (modalElement) modalElement.style.display = 'none';
         }
         function closeModalById(modalId) {
-             const modal = document.getElementById(modalId);
-             closeModal(modal);
+            const modal = document.getElementById(modalId);
+            closeModal(modal);
         }
 
-         function addNewChannelToList() {
+        function addNewChannelToList() {
             const newChannel = {
                  name: 'Nuevo Canal',
                  url: '',
@@ -1511,32 +1496,29 @@
                     if (index !== -1) {
                         const oldGrp = channels[index]['group-title'] || '';
                         if (oldGrp !== newGroupName) {
-                             affectedGroups.add(oldGrp);
+                            affectedGroups.add(oldGrp);
                             channels[index]['group-title'] = newGroupName;
                             channels[index].attributes = channels[index].attributes || {};
                             channels[index].attributes['group-title'] = newGroupName;
                             movedCount++;
                         }
-                     }
-                 });
-                  // Check if old groups are now empty only if channels were actually moved
-                 if (movedCount > 0) {
+                    }
+                });
+                if (movedCount > 0) {
                     affectedGroups.forEach(oldGroup => {
                         if (oldGroup !== newGroupName && !channels.some(ch => (ch['group-title'] || '') === oldGroup)) {
-                            updateGroupOrderIfNeeded(oldGroup, null); // Pass null to indicate removal check
+                            updateGroupOrderIfNeeded(oldGroup, null);
                         }
-                     });
-                 }
-             }
+                    });
+                }
+            }
 
-            // Add the new group to the order if it's not already there
             if (!groupOrder.includes(newGroupName)) {
                  groupOrder.push(newGroupName);
                  updateGroupSuggestions();
                  updateGroupFilter();
                  if (groupsManagementModal.style.display === 'flex') renderGroupsInModal();
             }
-
 
             closeModal(addGroupModal);
             newGroupNameInput.value = '';
@@ -1579,8 +1561,6 @@
                 if(groupHeader && groupHeader.dataset.group !== undefined) {
                      toggleGroupCollapse(groupHeader.dataset.group);
                  }
-            } else {
-                 // No longer automatically closes editor on clicking outside
             }
         }
 
@@ -1669,8 +1649,8 @@
                     return shouldKeep;
                  });
 
-                 selectedRowIndices.clear(); // Clear selection set
-                 if(editorNeedsClearing) showEditorPlaceholder(); // Clear editor if its channel was deleted
+                 selectedRowIndices.clear();
+                 if(editorNeedsClearing) showEditorPlaceholder();
 
 
                  channels.forEach((ch, idx) => ch.originalIndex = idx);
@@ -2122,24 +2102,13 @@
                  m3uContent += `${extinfLine},${channel.name || ''}\n`;
 
                 for (const key in channel.kodiProps) { if (channel.kodiProps[key]) m3uContent += `#KODIPROP:${key}=${channel.kodiProps[key]}\n`; }
-                // Handle EXTVLCOPT ensuring http-user-agent is specifically formatted
-                let vlcOptsString = '';
                  if(channel.vlcOptions) {
                      for(const key in channel.vlcOptions) {
-                        if (channel.vlcOptions[key]){
-                            // Don't double-write http-user-agent if handled specially
-                             if (key === 'http-user-agent' && channel.vlcOptions[key]) {
-                                // Already handled below? Ensure correct formatting only once.
-                             } else {
-                                m3uContent += `#EXTVLCOPT:${key}=${channel.vlcOptions[key]}\n`;
-                             }
+                         if (channel.vlcOptions[key]){
+                             m3uContent += `#EXTVLCOPT:${key}=${channel.vlcOptions[key]}\n`;
                          }
-                    }
-                    // Explicitly write http-user-agent if it exists
-                    if(channel.vlcOptions['http-user-agent']){
-                        m3uContent += `#EXTVLCOPT:http-user-agent=${channel.vlcOptions['http-user-agent']}\n`;
-                    }
-                }
+                     }
+                 }
 
 
                  m3uContent += `${channel.url || ''}\n`;
@@ -2265,7 +2234,6 @@
              } else {
                  tableBody.appendChild(fragment);
              }
-
 
              updateSelectAllCheckboxState();
              updateSortIcons();
@@ -2461,7 +2429,7 @@
              if (channels.length < 2) { showToast('Se necesitan al menos 2 canales para buscar duplicados.', 'info'); return; } setLoading(true, 'Buscando URLs duplicadas...'); const urlMap = new Map(); channels.forEach((ch) => { if (!ch || !ch.url) return; const url = ch.url; if (!urlMap.has(url)) urlMap.set(url, []); urlMap.get(url).push(ch.originalIndex); }); const duplicatesFound = []; urlMap.forEach((indices, url) => { if (indices.length > 1) duplicatesFound.push({ url, indices }); }); const listDiv = document.getElementById('duplicates-list'); listDiv.innerHTML = ''; if (duplicatesFound.length === 0) { setLoading(false); showToast('¡Buenas noticias! No se encontraron URLs duplicadas.', 'success'); return; } duplicatesFound.sort((a, b) => b.indices.length - a.indices.length); duplicatesFound.forEach(({ url, indices }) => { const setDiv = document.createElement('div'); setDiv.className = 'duplicate-set'; setDiv.dataset.url = url; setDiv.innerHTML = `<p><strong>URL Duplicada:</strong> <code>${escapeHtml(url)}</code> (${indices.length} canales)</p><ul></ul><button class="btn btn-sm btn-danger delete-duplicates-for-url" data-url="${escapeHtml(url)}" data-indices='${JSON.stringify(indices)}'><i class="fas fa-trash"></i> Guardar Primero, Borrar Resto</button>`; const ul = setDiv.querySelector('ul'); indices.forEach(idx => { const ch = channels.find(c => c.originalIndex === idx); if (ch) ul.innerHTML += `<li data-index="${idx}">#${idx + 1}: ${escapeHtml(ch.name || 'N/A')} (${escapeHtml(ch['group-title'] || 'S/G')})</li>`; }); listDiv.appendChild(setDiv); }); setLoading(false); openModal(duplicatesModal); duplicatesModified = false;
         }
          async function handleDeleteDuplicatesForUrl(e) {
-            const button = e.target.closest('.delete-duplicates-for-url'); if (!button) return; const url = button.dataset.url; const indicesStr = button.dataset.indices; if (!url || !indicesStr) return; let originalIndices; try { originalIndices = JSON.parse(indicesStr); } catch (err) { showToast('Error procesando índices de duplicados.', 'error'); return; } if (!Array.isArray(originalIndices) || originalIndices.length < 2) return; originalIndices.sort((a, b) => a - b); const indexToKeep = originalIndices[0]; const indicesToDelete = originalIndices.slice(1); const userConfirmed = await showConfirmationModal(`Eliminar ${indicesToDelete.length} duplicados para la URL <br><code>${escapeHtml(url)}</code>?<br>Se conservará el canal #${indexToKeep + 1}.`, 'Confirmar Eliminación de Duplicados', 'Sí, Eliminar Duplicados', 'btn-danger'); if (userConfirmed) { let deletedCount = 0; channels = channels.filter(ch => { const shouldDelete = indicesToDelete.includes(ch.originalIndex); if (shouldDelete) { deletedCount++; selectedRowIndices.delete(ch.originalIndex); if (ch.originalIndex === selectedChannelOriginalIndex) showEditorPlaceholder(); return false; } return true; }); if (deletedCount > 0) { channels.forEach((ch, idx) => ch.originalIndex = idx); showToast(`${deletedCount} canales duplicados eliminados.`, 'success'); button.closest('.duplicate-set').remove(); duplicatesModified = true; triggerLocalStorageSave(); renderTable(); updateSelectAllCheckboxState(); if (document.getElementById('duplicates-list').children.length === 0) closeModal(duplicatesModal); } else { showToast('No se encontraron duplicados para eliminar.', 'warning'); button.closest('.duplicate-set').remove(); } }
+            const button = e.target.closest('.delete-duplicates-for-url'); if (!button) return; const url = button.dataset.url; const indicesStr = button.dataset.indices; if (!url || !indicesStr) return; let originalIndices; try { originalIndices = JSON.parse(indicesStr); } catch (err) { showToast('Error procesando índices de duplicados.', 'error'); return; } if (!Array.isArray(originalIndices) || originalIndices.length < 2) return; originalIndices.sort((a, b) => a - b); const indexToKeep = originalIndices[0]; const indicesToDelete = originalIndices.slice(1); const userConfirmed = await showConfirmationModal(`Eliminar ${indicesToDelete.length} duplicados para la URL <br><code>${escapeHtml(url)}</code>?<br>Se conservará el canal #${indexToKeep + 1}.`, 'Confirmar Eliminación de Duplicados', 'Sí, Eliminar Duplicados', 'btn-danger'); if (userConfirmed) { let deletedCount = 0; let editorWasCleared = false; channels = channels.filter(ch => { const shouldDelete = indicesToDelete.includes(ch.originalIndex); if (shouldDelete) { deletedCount++; selectedRowIndices.delete(ch.originalIndex); if (ch.originalIndex === selectedChannelOriginalIndex){ showEditorPlaceholder(); editorWasCleared = true; } return false; } return true; }); if (deletedCount > 0) { channels.forEach((ch, idx) => ch.originalIndex = idx); showToast(`${deletedCount} canales duplicados eliminados.`, 'success'); button.closest('.duplicate-set').remove(); duplicatesModified = true; triggerLocalStorageSave(); renderTable(); updateSelectAllCheckboxState(); if (document.getElementById('duplicates-list').children.length === 0) closeModal(duplicatesModal); } else { showToast('No se encontraron duplicados para eliminar.', 'warning'); button.closest('.duplicate-set').remove(); } }
         }
         async function handleDeleteAllDuplicates() {
             const duplicateSets = duplicatesModal.querySelectorAll('.duplicate-set');
@@ -2500,6 +2468,7 @@
             if (userConfirmed) {
                 setLoading(true, "Eliminando duplicados...");
                 let overallDeletedCount = 0;
+                let editorNeedsClearing = false;
 
                 channels = channels.filter(channel => {
                     const shouldDelete = allIndicesToDelete.has(channel.originalIndex);
@@ -2507,14 +2476,14 @@
                         overallDeletedCount++;
                         selectedRowIndices.delete(channel.originalIndex);
                         if (channel.originalIndex === selectedChannelOriginalIndex) {
-                            showEditorPlaceholder();
+                             editorNeedsClearing = true;
                         }
                         return false;
                     }
                     return true;
                 });
 
-                // Re-index all remaining channels
+                if(editorNeedsClearing) showEditorPlaceholder();
                  channels.forEach((ch, idx) => ch.originalIndex = idx);
 
                 showToast(`${overallDeletedCount} canales duplicados eliminados en total.`, 'success');
@@ -2690,9 +2659,6 @@
          });
 
     </script>
-
-</body>
-</html>
 
 </body>
 </html>
